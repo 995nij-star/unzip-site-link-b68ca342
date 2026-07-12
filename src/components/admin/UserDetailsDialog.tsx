@@ -78,13 +78,16 @@ export function UserDetailsDialog({ open, onOpenChange, userId }: UserDetailsDia
         .order('joined_at', { ascending: false });
 
       // Calculate total spent
-      const tournaments = participations?.map(p => ({
-        id: p.tournaments?.id ?? '',
-        title: p.tournaments?.title ?? 'Unknown',
-        game: p.tournaments?.game ?? 'Unknown',
-        entry_fee: Number(p.tournaments?.entry_fee ?? 0),
+      const tournaments = participations?.map((p) => {
+        const tournament = Array.isArray(p.tournaments) ? p.tournaments[0] : p.tournaments;
+        return {
+        id: tournament?.id ?? '',
+        title: tournament?.title ?? 'Unknown',
+        game: tournament?.game ?? 'Unknown',
+        entry_fee: Number(tournament?.entry_fee ?? 0),
         joined_at: p.joined_at,
-      })).filter(t => t.id) ?? [];
+        };
+      }).filter(t => t.id) ?? [];
 
       const totalSpent = tournaments.reduce((sum, t) => sum + t.entry_fee, 0);
 

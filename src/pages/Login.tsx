@@ -76,7 +76,7 @@ export default function Login() {
       supabase.functions.invoke("send-otp", {
         body: { email: email.trim().toLowerCase() },
       })
-    );
+    ) as any;
     if (error || !data?.success) {
       throw new Error(data?.error || "Failed to send OTP");
     }
@@ -120,7 +120,7 @@ export default function Login() {
         supabase.functions.invoke("verify-otp", {
           body: { email: email.trim().toLowerCase(), otp: otpCode },
         })
-      );
+      ) as any;
       if (error || !data?.success) {
         toast({
           title: "Verification Failed",
