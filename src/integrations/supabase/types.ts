@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      payment_method_locks: {
+        Row: {
+          enabled: boolean
+          label: string
+          method_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          enabled?: boolean
+          label: string
+          method_id: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          enabled?: boolean
+          label?: string
+          method_id?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -46,6 +70,22 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      set_payment_method_enabled: {
+        Args: { _enabled: boolean; _method_id: string }
+        Returns: {
+          enabled: boolean
+          label: string
+          method_id: string
+          updated_at: string
+          updated_by: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "payment_method_locks"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
     }
     Enums: {
