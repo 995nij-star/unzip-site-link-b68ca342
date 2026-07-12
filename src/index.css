@@ -856,75 +856,95 @@
   }
 }
 
-/* === Permanent pure-black app background === */
-/* Overrides any admin theme --background override and prevents white edges/overscroll */
-html,
-body,
-#root,
-#app,
-main {
-  background-color: #000000 !important;
-}
+/* === Dark-mode pure-black enforcement (scoped so light mode works) === */
 html, body {
   min-height: 100%;
   overscroll-behavior: none;
-  background-color: #000000 !important;
-}
-:root { color-scheme: dark; }
-
-/* Force top headers and side drawers (radix Sheet) to pure black */
-header.sticky,
-header[class*="sticky top-0"],
-nav.sticky,
-[data-radix-dialog-content][data-side="left"],
-[data-radix-dialog-content][data-side="right"] {
-  background-color: #000000 !important;
-  background-image: none !important;
 }
 
-/* === Global pure-black enforcement === */
-/* Neutralize any white/light utility classes anywhere in the app */
-.bg-white,
-.bg-slate-50, .bg-slate-100, .bg-slate-200,
-.bg-gray-50, .bg-gray-100, .bg-gray-200,
-.bg-neutral-50, .bg-neutral-100, .bg-neutral-200,
-.bg-zinc-50, .bg-zinc-100, .bg-zinc-200,
-.bg-stone-50, .bg-stone-100, .bg-stone-200 {
+.dark html,
+.dark body,
+.dark #root,
+.dark #app,
+.dark main,
+.dark footer,
+html.dark,
+html.dark body,
+html.dark #root,
+html.dark #app,
+html.dark main,
+html.dark footer {
   background-color: #000000 !important;
   color: #ffffff;
 }
 
-/* Force common shell containers to black */
-html, body, #root, #app, .app, .layout, .container, main, footer {
+/* Force top headers and side drawers to pure black — dark mode only */
+.dark header.sticky,
+.dark header[class*="sticky top-0"],
+.dark nav.sticky,
+.dark [data-radix-dialog-content][data-side="left"],
+.dark [data-radix-dialog-content][data-side="right"],
+html.dark [data-radix-dialog-content][data-side="left"],
+html.dark [data-radix-dialog-content][data-side="right"] {
   background-color: #000000 !important;
-}
-html, body { color: #ffffff; }
-
-/* Radix overlays / dialogs / popovers / dropdowns / sheets: solid black surfaces */
-[data-radix-popper-content-wrapper] > *,
-[role="dialog"],
-[role="menu"],
-[role="listbox"],
-[data-radix-dialog-content],
-[data-radix-popover-content],
-[data-radix-dropdown-menu-content],
-[data-radix-select-content],
-[data-radix-hover-card-content],
-[data-radix-tooltip-content] {
-  background-color: #000000 !important;
+  background-image: none !important;
 }
 
-/* Dialog/sheet backdrop stays dark (not white) */
-[data-radix-dialog-overlay] {
+/* Neutralize accidental white utility classes only in dark mode */
+.dark .bg-white,
+.dark .bg-slate-50, .dark .bg-slate-100, .dark .bg-slate-200,
+.dark .bg-gray-50, .dark .bg-gray-100, .dark .bg-gray-200,
+.dark .bg-neutral-50, .dark .bg-neutral-100, .dark .bg-neutral-200,
+.dark .bg-zinc-50, .dark .bg-zinc-100, .dark .bg-zinc-200,
+.dark .bg-stone-50, .dark .bg-stone-100, .dark .bg-stone-200 {
+  background-color: #000000 !important;
+  color: #ffffff;
+}
+
+/* Radix overlays / dialogs / popovers / dropdowns / sheets — dark mode only */
+html.dark [data-radix-popper-content-wrapper] > *,
+html.dark [role="dialog"],
+html.dark [role="menu"],
+html.dark [role="listbox"],
+html.dark [data-radix-dialog-content],
+html.dark [data-radix-popover-content],
+html.dark [data-radix-dropdown-menu-content],
+html.dark [data-radix-select-content],
+html.dark [data-radix-hover-card-content],
+html.dark [data-radix-tooltip-content] {
+  background-color: #000000 !important;
+}
+
+/* Light-mode radix surfaces use the token background */
+html:not(.dark) [data-radix-popper-content-wrapper] > *,
+html:not(.dark) [role="dialog"],
+html:not(.dark) [role="menu"],
+html:not(.dark) [role="listbox"],
+html:not(.dark) [data-radix-dialog-content],
+html:not(.dark) [data-radix-popover-content],
+html:not(.dark) [data-radix-dropdown-menu-content],
+html:not(.dark) [data-radix-select-content],
+html:not(.dark) [data-radix-hover-card-content],
+html:not(.dark) [data-radix-tooltip-content] {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+}
+
+/* Dialog/sheet backdrop */
+.dark [data-radix-dialog-overlay] {
   background-color: rgba(0, 0, 0, 0.85) !important;
+}
+html:not(.dark) [data-radix-dialog-overlay] {
+  background-color: rgba(15, 15, 20, 0.45) !important;
 }
 
 /* Toasts */
-[data-sonner-toaster] [data-sonner-toast],
-[data-radix-toast-root] {
+.dark [data-sonner-toaster] [data-sonner-toast],
+.dark [data-radix-toast-root] {
   background-color: #000000 !important;
   color: #ffffff !important;
 }
+
 
 
 
