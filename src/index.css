@@ -8,83 +8,79 @@
    Apple minimalism × Futuristic Cyber. Preserves neon tokens for legacy screens. */
 
 @layer base {
+  /* LIGHT theme (default) */
   :root {
-    /* Deep black fintech base (#050505 / #0A0A0C) */
-    --background: 0 0% 0%;
-    --foreground: 210 20% 98%;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 6%;
 
-    /* Dark graphite surfaces (#111113) */
-    --card: 240 6% 7%;
-    --card-foreground: 210 20% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 6%;
 
-    --popover: 240 6% 9%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 6%;
 
-    /* Electric blue #3B82F6 */
-    --primary: 217 91% 60%;
-    --primary-foreground: 240 10% 4%;
+    --primary: 217 91% 55%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Neon purple #8B5CF6 */
-    --secondary: 258 90% 66%;
-    --secondary-foreground: 240 10% 4%;
+    --secondary: 258 90% 60%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 5% 12%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 5% 35%;
 
-    --accent: 258 90% 66%;
-    --accent-foreground: 240 10% 4%;
+    --accent: 258 90% 60%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 60%;
-    --destructive-foreground: 210 20% 98%;
+    --destructive: 0 72% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 6% 16%;
-    --input: 240 6% 12%;
-    --ring: 217 91% 60%;
+    --border: 240 6% 90%;
+    --input: 240 6% 92%;
+    --ring: 217 91% 55%;
 
     --radius: 1rem;
 
+    /* Accent palette (kept "neon-*" names for backward compatibility) */
+    --neon-blue: 217 91% 55%;
+    --neon-cyan: 190 90% 45%;
+    --neon-pink: 330 80% 55%;
+    --neon-green: 152 68% 42%;
+    --neon-orange: 32 95% 52%;
+    --neon-purple: 258 90% 60%;
+    --neon-gold: 43 92% 50%;
+    --neon-gold-light: 43 96% 68%;
+    --neon-red: 0 72% 52%;
 
-    /* Fintech accent palette (kept "neon-*" names for backward compatibility) */
-    --neon-blue: 217 91% 60%;      /* electric blue */
-    --neon-cyan: 190 90% 55%;      /* soft cyan */
-    --neon-pink: 330 80% 62%;      /* soft magenta */
-    --neon-green: 152 68% 48%;     /* emerald success */
-    --neon-orange: 32 95% 58%;     /* refined amber */
-    --neon-purple: 258 90% 66%;    /* neon purple */
-    --neon-gold: 43 92% 58%;       /* premium gold */
-    --neon-gold-light: 43 96% 74%;
-    --neon-red: 0 72% 60%;         /* soft red */
+    --gradient-neon: linear-gradient(135deg, hsl(217 91% 55%) 0%, hsl(258 90% 60%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(240 6% 97%) 100%);
+    --gradient-card-neon: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(240 6% 96%) 100%);
+    --gradient-cyber: linear-gradient(135deg, hsl(190 90% 45%) 0%, hsl(217 91% 55%) 100%);
+    --gradient-fire: linear-gradient(135deg, hsl(32 95% 52%) 0%, hsl(330 80% 55%) 100%);
+    --gradient-aurora: linear-gradient(135deg, hsl(152 68% 42%) 0%, hsl(190 90% 45%) 50%, hsl(258 90% 60%) 100%);
+    --gradient-sunset: linear-gradient(135deg, hsl(330 80% 55%) 0%, hsl(32 95% 52%) 50%, hsl(43 92% 50%) 100%);
+    --gradient-glow: linear-gradient(180deg, hsl(258 90% 60% / 0.12) 0%, transparent 100%);
 
-    /* Fintech gradients */
-    --gradient-neon: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(258 90% 66%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(240 6% 8%) 0%, hsl(240 8% 4%) 100%);
-    --gradient-card-neon: linear-gradient(135deg, hsl(240 6% 9%) 0%, hsl(240 8% 5%) 100%);
-    --gradient-cyber: linear-gradient(135deg, hsl(190 90% 55%) 0%, hsl(217 91% 60%) 100%);
-    --gradient-fire: linear-gradient(135deg, hsl(32 95% 58%) 0%, hsl(330 80% 62%) 100%);
-    --gradient-aurora: linear-gradient(135deg, hsl(152 68% 48%) 0%, hsl(190 90% 55%) 50%, hsl(258 90% 66%) 100%);
-    --gradient-sunset: linear-gradient(135deg, hsl(330 80% 62%) 0%, hsl(32 95% 58%) 50%, hsl(43 92% 58%) 100%);
-    --gradient-glow: linear-gradient(180deg, hsl(258 90% 66% / 0.18) 0%, transparent 100%);
+    --shadow-neon: 0 8px 30px hsl(217 91% 55% / 0.14), 0 2px 8px hsl(217 91% 55% / 0.08);
+    --shadow-purple: 0 10px 40px hsl(258 90% 60% / 0.18);
+    --shadow-cyan: 0 8px 30px hsl(190 90% 45% / 0.14);
+    --shadow-pink: 0 8px 30px hsl(330 80% 55% / 0.14);
+    --shadow-glow: 0 10px 40px hsl(217 91% 55% / 0.16);
+    --shadow-card: 0 12px 40px -12px hsl(240 20% 20% / 0.14), 0 2px 8px hsl(240 10% 20% / 0.06);
+    --shadow-gold: 0 8px 30px hsl(43 92% 50% / 0.2);
 
-    /* Refined shadows — softer, luxury feel */
-    --shadow-neon: 0 8px 30px hsl(217 91% 60% / 0.18), 0 2px 8px hsl(217 91% 60% / 0.12);
-    --shadow-purple: 0 10px 40px hsl(258 90% 66% / 0.22);
-    --shadow-cyan: 0 8px 30px hsl(190 90% 55% / 0.18);
-    --shadow-pink: 0 8px 30px hsl(330 80% 62% / 0.18);
-    --shadow-glow: 0 10px 40px hsl(217 91% 60% / 0.2);
-    --shadow-card: 0 20px 60px -20px hsl(240 20% 0% / 0.7), 0 2px 8px hsl(240 10% 0% / 0.4);
-    --shadow-gold: 0 8px 30px hsl(43 92% 58% / 0.25);
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 10% 15%;
+    --sidebar-primary: 217 91% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 6% 94%;
+    --sidebar-accent-foreground: 240 10% 6%;
+    --sidebar-border: 240 6% 88%;
+    --sidebar-ring: 217 91% 55%;
 
-
-    --sidebar-background: 240 8% 5%;
-    --sidebar-foreground: 210 20% 96%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 240 6% 12%;
-    --sidebar-accent-foreground: 210 20% 98%;
-    --sidebar-border: 240 6% 14%;
-    --sidebar-ring: 217 91% 60%;
+    color-scheme: light;
   }
 
+  /* DARK theme */
   .dark {
     --background: 0 0% 0%;
     --foreground: 210 20% 98%;
@@ -105,6 +101,23 @@
     --border: 240 6% 16%;
     --input: 240 6% 12%;
     --ring: 217 91% 60%;
+
+    --neon-blue: 217 91% 60%;
+    --neon-cyan: 190 90% 55%;
+    --neon-pink: 330 80% 62%;
+    --neon-green: 152 68% 48%;
+    --neon-orange: 32 95% 58%;
+    --neon-purple: 258 90% 66%;
+    --neon-gold: 43 92% 58%;
+    --neon-gold-light: 43 96% 74%;
+    --neon-red: 0 72% 60%;
+
+    --gradient-neon: linear-gradient(135deg, hsl(217 91% 60%) 0%, hsl(258 90% 66%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(240 6% 8%) 0%, hsl(240 8% 4%) 100%);
+    --gradient-card-neon: linear-gradient(135deg, hsl(240 6% 9%) 0%, hsl(240 8% 5%) 100%);
+
+    --shadow-card: 0 20px 60px -20px hsl(240 20% 0% / 0.7), 0 2px 8px hsl(240 10% 0% / 0.4);
+
     --sidebar-background: 240 8% 5%;
     --sidebar-foreground: 210 20% 96%;
     --sidebar-primary: 217 91% 60%;
@@ -113,6 +126,8 @@
     --sidebar-accent-foreground: 210 20% 98%;
     --sidebar-border: 240 6% 14%;
     --sidebar-ring: 217 91% 60%;
+
+    color-scheme: dark;
   }
 }
 
