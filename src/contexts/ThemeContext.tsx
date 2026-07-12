@@ -46,6 +46,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   // User preference overrides admin setting; fallback to admin
   const isDark = userDarkMode !== null ? userDarkMode : theme.darkMode;
 
+  // Apply the dark class + color-scheme immediately whenever isDark changes,
+  // independent of admin theme loading, so the toggle works everywhere on every page.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle("dark", isDark);
+    root.style.colorScheme = isDark ? "dark" : "light";
+  }, [isDark]);
+
   useEffect(() => {
     if (isLoading) return;
 
@@ -54,7 +62,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.style.setProperty("--primary", theme.primaryColor);
     root.style.setProperty("--button-color", theme.buttonColor);
     root.style.setProperty("--secondary", theme.secondaryColor);
-    // --background is locked to pure black globally via index.css; do not override
     root.style.setProperty("--ring", theme.primaryColor);
 
     root.style.setProperty("--sidebar-primary", theme.primaryColor);
@@ -71,13 +78,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
     root.style.setProperty("--font-heading", `"${theme.headingFont}", sans-serif`);
     root.style.setProperty("--font-body", `"${theme.bodyFont}", sans-serif`);
-
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-  }, [theme, isLoading, isDark]);
+  }, [theme, isLoading]);
 
   return (
     <ThemeContext.Provider value={{ theme, isLoading, userDarkMode, setUserDarkMode, isDark }}>
