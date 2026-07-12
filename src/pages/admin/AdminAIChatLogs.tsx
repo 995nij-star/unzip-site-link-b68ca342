@@ -68,7 +68,7 @@ export default function AdminAIChatLogs() {
       const profileMap = new Map((profiles || []).map(p => [p.user_id, p]));
 
       const result: AIChatUser[] = userIds.map(uid => {
-        const p = profileMap.get(uid);
+        const p = profileMap.get(uid) as any;
         const stats = userMap.get(uid)!;
         return {
           user_id: uid,

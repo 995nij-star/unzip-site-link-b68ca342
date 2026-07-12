@@ -39,7 +39,7 @@ export function useLeaderboard() {
       );
 
       setPlayers(data.map((p: any) => {
-        const profile = profileMap.get(p.user_id);
+        const profile = profileMap.get(p.user_id) as any;
         return {
           user_id: p.user_id,
           username: p.username,

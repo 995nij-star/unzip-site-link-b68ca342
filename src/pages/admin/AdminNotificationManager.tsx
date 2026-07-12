@@ -48,7 +48,7 @@ export default function AdminNotificationManager() {
         userIds = data?.map(p => p.user_id) || [];
       } else if (audience === "tournament_players") {
         const { data } = await supabase.from("tournament_participants").select("user_id").limit(5000);
-        const unique = [...new Set(data?.map(p => p.user_id).filter(id => id !== user.id) || [])];
+        const unique = [...new Set(data?.map((p: any) => p.user_id).filter(id => id !== user.id) || [])] as string[];
         userIds = unique;
       } else if (audience === "wallet_holders") {
         const { data } = await supabase.from("wallets").select("user_id").gt("balance", 0).neq("user_id", user.id).limit(5000);
