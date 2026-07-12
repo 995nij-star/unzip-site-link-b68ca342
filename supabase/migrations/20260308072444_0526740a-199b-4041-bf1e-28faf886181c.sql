@@ -1,0 +1,1 @@
+CREATE POLICY "Admins can delete messages" ON public.direct_messages FOR DELETE TO authenticated USING (is_admin_or_moderator(auth.uid()));
