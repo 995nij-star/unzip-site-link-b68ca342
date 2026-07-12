@@ -1,0 +1,1 @@
+ALTER TABLE public.login_history ADD COLUMN IF NOT EXISTS device_type text DEFAULT 'desktop';
