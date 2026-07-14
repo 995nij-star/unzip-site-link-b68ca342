@@ -43,16 +43,20 @@ export function useTopupRequests() {
 
   // Submit a new topup request
   const submitRequest = useMutation({
-    mutationFn: async ({ amount, utr, screenshotUrl }: { amount: number; utr: string; screenshotUrl?: string }) => {
+    mutationFn: async ({ amount, utr, screenshotUrl, method }: { amount: number; utr: string; screenshotUrl?: string; method?: string }) => {
       if (!user) throw new Error('Not authenticated');
+      if (!amount || amount <= 0) throw new Error('Enter a valid amount');
+      if (!utr || !utr.trim()) throw new Error('UTR / Transaction ID is required');
 
       const { data, error } = await supabase
         .from('topup_requests')
         .insert({
           user_id: user.id,
           amount,
-          utr,
-          screenshot_url: screenshotUrl || null,
+          utr: utr.trim(),
+          method: method ?? 'upi',
+          screenshot_url: screenshotUrl ?? null,
+          status: 'pending',
         })
         .select()
         .single();
