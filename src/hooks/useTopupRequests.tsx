@@ -12,7 +12,9 @@ interface TopupRequest {
   screenshot_url: string | null;
   status: 'pending' | 'approved' | 'rejected';
   admin_notes: string | null;
-  approved_by: string | null;
+  processed_by: string | null;
+  processed_at?: string | null;
+  method?: string;
   created_at: string;
   updated_at: string;
   username?: string;
@@ -43,16 +45,20 @@ export function useTopupRequests() {
 
   // Submit a new topup request
   const submitRequest = useMutation({
-    mutationFn: async ({ amount, utr, screenshotUrl }: { amount: number; utr: string; screenshotUrl?: string }) => {
+    mutationFn: async ({ amount, utr, screenshotUrl, method }: { amount: number; utr: string; screenshotUrl?: string; method?: string }) => {
       if (!user) throw new Error('Not authenticated');
+      if (!amount || amount <= 0) throw new Error('Enter a valid amount');
+      if (!utr || !utr.trim()) throw new Error('UTR / Transaction ID is required');
 
       const { data, error } = await supabase
         .from('topup_requests')
         .insert({
           user_id: user.id,
           amount,
-          utr,
-          screenshot_url: screenshotUrl || null,
+          utr: utr.trim(),
+          method: method ?? 'upi',
+          screenshot_url: screenshotUrl ?? null,
+          status: 'pending',
         })
         .select()
         .single();
@@ -92,11 +98,12 @@ export function useTopupRequests() {
       return null;
     }
 
-    const { data: urlData } = supabase.storage
+    // Bucket is private; create a long-lived signed URL so admins can view later
+    const { data: signed } = await supabase.storage
       .from('topup-screenshots')
-      .getPublicUrl(data.path);
+      .createSignedUrl(data.path, 60 * 60 * 24 * 365);
 
-    return urlData.publicUrl;
+    return signed?.signedUrl ?? null;
   };
 
   return {
@@ -202,7 +209,8 @@ export function useAdminTopupRequests() {
         .from('topup_requests')
         .update({
           status: 'approved',
-          approved_by: adminId,
+          processed_by: adminId,
+          processed_at: new Date().toISOString(),
         })
         .eq('id', requestId);
 
@@ -235,6 +243,7 @@ export function useAdminTopupRequests() {
         .update({
           status: 'rejected',
           admin_notes: reason || 'Request rejected',
+          processed_at: new Date().toISOString(),
         })
         .eq('id', requestId);
 
