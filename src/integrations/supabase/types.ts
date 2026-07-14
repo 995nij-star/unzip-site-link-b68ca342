@@ -836,6 +836,36 @@ export type Database = {
         }
         Relationships: []
       }
+      login_otps: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          failed_attempts: number
+          id: string
+          otp_code: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          failed_attempts?: number
+          id?: string
+          otp_code: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          failed_attempts?: number
+          id?: string
+          otp_code?: string
+          verified?: boolean
+        }
+        Relationships: []
+      }
       mod_applications: {
         Row: {
           admin_notes: string | null
@@ -941,6 +971,36 @@ export type Database = {
           tournament_id?: string | null
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      password_reset_otps: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          failed_attempts: number
+          id: string
+          otp_code: string
+          verified: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          failed_attempts?: number
+          id?: string
+          otp_code: string
+          verified?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          failed_attempts?: number
+          id?: string
+          otp_code?: string
+          verified?: boolean
         }
         Relationships: []
       }
@@ -1289,7 +1349,7 @@ export type Database = {
           amount: number
           created_at?: string
           id?: string
-          method: string
+          method?: string
           processed_at?: string | null
           processed_by?: string | null
           screenshot_url?: string | null
