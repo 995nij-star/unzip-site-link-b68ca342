@@ -12,7 +12,9 @@ interface TopupRequest {
   screenshot_url: string | null;
   status: 'pending' | 'approved' | 'rejected';
   admin_notes: string | null;
-  approved_by: string | null;
+  processed_by: string | null;
+  processed_at?: string | null;
+  method?: string;
   created_at: string;
   updated_at: string;
   username?: string;
