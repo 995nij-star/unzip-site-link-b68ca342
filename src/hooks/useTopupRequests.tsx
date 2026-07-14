@@ -98,11 +98,12 @@ export function useTopupRequests() {
       return null;
     }
 
-    const { data: urlData } = supabase.storage
+    // Bucket is private; create a long-lived signed URL so admins can view later
+    const { data: signed } = await supabase.storage
       .from('topup-screenshots')
-      .getPublicUrl(data.path);
+      .createSignedUrl(data.path, 60 * 60 * 24 * 365);
 
-    return urlData.publicUrl;
+    return signed?.signedUrl ?? null;
   };
 
   return {
