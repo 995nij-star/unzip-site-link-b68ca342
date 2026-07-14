@@ -242,6 +242,7 @@ export function useAdminTopupRequests() {
         .update({
           status: 'rejected',
           admin_notes: reason || 'Request rejected',
+          processed_at: new Date().toISOString(),
         })
         .eq('id', requestId);
 
