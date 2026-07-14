@@ -206,7 +206,8 @@ export function useAdminTopupRequests() {
         .from('topup_requests')
         .update({
           status: 'approved',
-          approved_by: adminId,
+          processed_by: adminId,
+          processed_at: new Date().toISOString(),
         })
         .eq('id', requestId);
 
