@@ -62,7 +62,7 @@ export function useSiteSettings() {
         .from("site_settings_public" as any)
         .select("value")
         .eq("key", "theme")
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching theme settings:", error);
