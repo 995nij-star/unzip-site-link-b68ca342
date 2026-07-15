@@ -233,7 +233,7 @@ serve(async (req) => {
     }
 
     // Record success
-    if (success === true) {
+    if (verifiedSuccess) {
       await supabase.from("login_attempts").insert({
         email: normalizedEmail,
         ip_address: ip,
