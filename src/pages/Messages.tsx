@@ -37,13 +37,17 @@ export default function Messages() {
   const [searching, setSearching] = useState(false);
 
   const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
+    const raw = searchQuery.trim();
+    if (!raw) return;
+    const { sanitizeSearchTerm } = await import("@/lib/searchSanitize");
+    const safe = sanitizeSearchTerm(raw);
+    if (!safe) { setSearchResults([]); return; }
     setSearching(true);
     try {
       const { data } = await supabase
         .from("profiles_public")
         .select("user_id, username, avatar_url, uid")
-        .or(`username.ilike.%${searchQuery}%,uid.eq.${searchQuery}`)
+        .or(`username.ilike.%${safe}%,uid.eq.${safe}`)
         .neq("user_id", user?.id || "")
         .limit(10);
       setSearchResults(data || []);
