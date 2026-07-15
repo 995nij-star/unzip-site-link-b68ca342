@@ -168,11 +168,14 @@ export default function AdminTestZone() {
     e.preventDefault();
     const q = search.trim();
     if (!q) return;
+    const { sanitizeSearchTerm } = await import("@/lib/searchSanitize");
+    const safe = sanitizeSearchTerm(q);
     setSearching(true);
     setMatches([]);
     let query = supabase.from("profiles").select("user_id, username, uid, email, avatar_url").limit(10);
     if (/^\d{10}$/.test(q)) query = query.eq("uid", q);
-    else query = query.or(`username.ilike.%${q}%,email.ilike.%${q}%,uid.ilike.%${q}%`);
+    else if (safe) query = query.or(`username.ilike.%${safe}%,email.ilike.%${safe}%,uid.ilike.%${safe}%`);
+    else { setSearching(false); return; }
     const { data, error } = await query;
     setSearching(false);
     if (error) {
