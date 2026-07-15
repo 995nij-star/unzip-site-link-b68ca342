@@ -31,9 +31,30 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const normalizedEmail = email.trim().toLowerCase();
+
+    // SECURITY: A success=true call clears the caller's lockout counter.
+    // Only trust it when accompanied by a valid Supabase JWT whose email
+    // matches the reported one. Otherwise an unauthenticated attacker
+    // could reset their own lockouts and continue brute-forcing.
+    let verifiedSuccess = false;
+    if (success === true) {
+      const authHeader = req.headers.get("Authorization") || "";
+      const token = authHeader.replace(/^Bearer\s+/i, "").trim();
+      if (token) {
+        try {
+          const verifier = createClient(supabaseUrl, anonKey);
+          const { data: userRes } = await verifier.auth.getUser(token);
+          const jwtEmail = userRes?.user?.email?.trim().toLowerCase();
+          if (jwtEmail && jwtEmail === normalizedEmail) verifiedSuccess = true;
+        } catch (_e) {
+          verifiedSuccess = false;
+        }
+      }
+    }
     const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
       req.headers.get("cf-connecting-ip") || "unknown";
 
