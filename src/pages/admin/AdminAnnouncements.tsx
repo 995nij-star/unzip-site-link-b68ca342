@@ -40,10 +40,13 @@ export default function AdminAnnouncements() {
     queryKey: ["user-search", userSearch],
     queryFn: async () => {
       if (!userSearch || userSearch.length < 3) return [];
+      const { sanitizeSearchTerm } = await import("@/lib/searchSanitize");
+      const safe = sanitizeSearchTerm(userSearch);
+      if (!safe) return [];
       const { data } = await supabase
         .from("profiles")
         .select("user_id, username, uid, avatar_url")
-        .or(`uid.ilike.%${userSearch}%,username.ilike.%${userSearch}%`)
+        .or(`uid.ilike.%${safe}%,username.ilike.%${safe}%`)
         .limit(5);
       return data || [];
     },
