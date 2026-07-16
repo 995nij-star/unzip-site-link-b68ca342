@@ -60,9 +60,15 @@ export default function AuthCallback() {
           setStatus("success");
           setMessage("Login successful!");
 
+          let nextPath: string | null = null;
+          try {
+            const v = sessionStorage.getItem("post-login-next");
+            if (v && v.startsWith("/") && !v.startsWith("//")) nextPath = v;
+            sessionStorage.removeItem("post-login-next");
+          } catch {}
           const isOwner = data.session.user.email?.toLowerCase() === "okbin8511@gmail.com";
           setTimeout(() => {
-            navigate(isOwner ? "/admin" : "/dashboard");
+            navigate(nextPath ?? (isOwner ? "/admin" : "/dashboard"));
           }, 1500);
         } else {
           // No session yet - might still be processing
@@ -78,9 +84,15 @@ export default function AuthCallback() {
           if (retryData.session) {
             setStatus("success");
             setMessage("Login successful!");
+            let nextPath: string | null = null;
+            try {
+              const v = sessionStorage.getItem("post-login-next");
+              if (v && v.startsWith("/") && !v.startsWith("//")) nextPath = v;
+              sessionStorage.removeItem("post-login-next");
+            } catch {}
             const isOwner = retryData.session.user.email?.toLowerCase() === "okbin8511@gmail.com";
             setTimeout(() => {
-              navigate(isOwner ? "/admin" : "/dashboard");
+              navigate(nextPath ?? (isOwner ? "/admin" : "/dashboard"));
             }, 1500);
           } else {
             setStatus("success");

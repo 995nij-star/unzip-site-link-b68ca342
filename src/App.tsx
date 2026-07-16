@@ -86,6 +86,7 @@ const AdminUserLocations = lazy(() => import("./pages/admin/AdminUserLocations")
 const AdminKyc = lazy(() => import("./pages/admin/AdminKyc"));
 const KycVerification = lazy(() => import("./pages/KycVerification"));
 const DeveloperApi = lazy(() => import("./pages/DeveloperApi"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 const Sessions = lazy(() => import("./pages/Sessions"));
 const AdminDeveloperApi = lazy(() => import("./pages/admin/AdminDeveloperApi"));
 const AdminMoneyTransfers = lazy(() => import("./pages/admin/AdminMoneyTransfers"));
@@ -154,6 +155,7 @@ const App = () => (
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<Navigate to="/forgot-password" replace />} />
+                <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
                 <Route path="/help" element={<HelpCenter />} />
                 <Route path="/install" element={<Install />} />
                 <Route path="/download" element={<DownloadAPK />} />
