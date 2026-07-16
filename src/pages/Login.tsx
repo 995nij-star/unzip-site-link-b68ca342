@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Mail,
   Lock,
@@ -61,6 +61,17 @@ export default function Login() {
   const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const rawNext = searchParams.get("next");
+  // Same-origin relative path only.
+  const nextPath =
+    rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+  // Remember across Google OAuth round-trip.
+  useEffect(() => {
+    if (nextPath) {
+      try { sessionStorage.setItem("post-login-next", nextPath); } catch {}
+    }
+  }, [nextPath]);
   const { settings: s } = useLoginPageSettings();
   const { isDark, setUserDarkMode } = useTheme();
   const { language, setLanguage, languageNames } = useLanguage();
@@ -106,7 +117,8 @@ export default function Login() {
     }
 
     toast({ title: "Welcome back!", description: "Login successful" });
-    navigate("/admin");
+    try { sessionStorage.removeItem("post-login-next"); } catch {}
+    navigate(nextPath ?? "/admin");
     setIsLoading(false);
     setLoadingStage("");
   };
