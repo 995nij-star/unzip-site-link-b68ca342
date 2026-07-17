@@ -1030,7 +1030,7 @@ export default function AdminSettings() {
                       { mime: "video/quicktime", label: "MOV" },
                       { mime: "video/webm", label: "WebM" },
                     ].map(({ mime, label }) => {
-                      const isEnabled = currentVideoSettings.allowedFormats.includes(mime);
+                      const isEnabled = (currentVideoSettings.allowedFormats ?? []).includes(mime);
                       return (
                         <button
                           key={mime}
