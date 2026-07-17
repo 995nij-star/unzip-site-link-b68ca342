@@ -228,8 +228,9 @@ export default function SendMoney() {
           countryCode,
           currency: receiveCurrency,
           favorite: markFavorite,
-        });
+        }, user?.id);
       }
+
 
       // Close OTP dialog and show the premium success animation.
       setOtpOpen(false);
