@@ -1,7 +1,6 @@
 import { useEffect, useState, createContext, useContext, ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { lovable } from '@/integrations/lovable/index';
 
 const STORAGE_KEY = 'xt_local_admin_session';
 
@@ -25,7 +24,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     localStorage.removeItem(STORAGE_KEY);
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setLoading(false);
@@ -45,26 +46,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: email.trim().toLowerCase(),
       password,
     });
-    return { error: error ? new Error(error.message) : null };
+
+    return {
+      error: error ? new Error(error.message) : null,
+    };
   };
 
-  const signUp = async (email: string, password: string, username: string) => {
+  const signUp = async (
+    email: string,
+    password: string,
+    username: string
+  ) => {
     const { error } = await supabase.auth.signUp({
       email: email.trim().toLowerCase(),
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
-        data: { username },
+        data: {
+          username,
+        },
       },
     });
-    return { error: error ? new Error(error.message) : null };
+
+    return {
+      error: error ? new Error(error.message) : null,
+    };
   };
 
   const signInWithGoogle = async () => {
-    const result = await lovable.auth.signInWithOAuth('google', {
-      redirect_uri: `${window.location.origin}/auth/callback`,
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
     });
-    return { error: result?.error ? new Error(result.error.message) : null };
+
+    return {
+      error: error ? new Error(error.message) : null,
+    };
   };
 
   const signOut = async () => {
@@ -75,7 +94,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signUp, signIn, signInWithGoogle, signOut }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        loading,
+        signUp,
+        signIn,
+        signInWithGoogle,
+        signOut,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -83,8 +112,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
+
+  if (!context) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
+
   return context;
 }
