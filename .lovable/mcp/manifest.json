@@ -8,8 +8,7 @@
   "accepted_audiences": [
     "authenticated"
   ]
-},
-  },
+}
   "mcp": {
     "server": {
       "name": "xt-esports-mcp",
