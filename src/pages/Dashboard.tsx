@@ -533,5 +533,6 @@ export default function Dashboard() {
           </Link>
         </div>
         </footer>
-    </div>
-);
+      </div>
+  );
+}
