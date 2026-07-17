@@ -10,9 +10,16 @@ interface AdminProtectedRouteProps {
 
 export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
-  const { hasAdminAccess, isLoading: adminLoading } = useAdmin();
+  const { hasAdminAccess, isLoading: adminLoading, isError: adminError } = useAdmin();
 
-  if (authLoading || adminLoading) {
+  // Redirect to login if unauthenticated
+  if (!authLoading && !user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Show loading while auth resolves, admin check runs, or admin check errored
+  // (on error, TanStack Query will retry — keep showing loader rather than bouncing user home)
+  if (authLoading || adminLoading || adminError) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background cyber-grid">
         <div className="text-center space-y-4">
@@ -22,15 +29,11 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
           </div>
           <div className="flex items-center gap-2 text-muted-foreground font-rajdhani">
             <Loader2 className="w-5 h-5 animate-spin" />
-            Verifying access...
+            Verifying access…
           </div>
         </div>
       </div>
     );
-  }
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
   }
 
   if (!hasAdminAccess) {

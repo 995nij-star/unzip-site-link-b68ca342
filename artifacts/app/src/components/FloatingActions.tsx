@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Send, Wallet as WalletIcon, Command, X } from "lucide-react";
+import { Plus, Send, Wallet as WalletIcon, Command, X, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAdmin } from "@/hooks/useAdmin";
 
 /**
  * Floating quick-action dial. Pure presentational — routes users to
@@ -12,6 +13,7 @@ export function FloatingActions() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { hasAdminAccess } = useAdmin();
 
   const hidden =
     pathname.startsWith("/admin") ||
@@ -26,6 +28,9 @@ export function FloatingActions() {
   if (hidden) return null;
 
   const actions = [
+    ...(hasAdminAccess
+      ? [{ label: "Admin Panel", icon: Shield, path: "/admin", highlight: true }]
+      : []),
     { label: "Send Money", icon: Send, path: "/wallet/send" },
     { label: "Add Money", icon: Plus, path: "/wallet/add" },
     { label: "Wallet", icon: WalletIcon, path: "/wallet" },
@@ -60,13 +65,27 @@ export function FloatingActions() {
               if ("onClick" in a && a.onClick) a.onClick();
               else if ("path" in a && a.path) navigate(a.path);
             }}
-            className="group flex items-center gap-3 pl-4 pr-3 py-2 rounded-full glass-luxury-strong hover:border-primary/40 transition-all hover:-translate-y-0.5"
+            className={cn(
+              "group flex items-center gap-3 pl-4 pr-3 py-2 rounded-full glass-luxury-strong hover:border-primary/40 transition-all hover:-translate-y-0.5",
+              "highlight" in a && a.highlight && "border border-[hsl(var(--neon-purple)/0.4)] hover:border-[hsl(var(--neon-purple)/0.7)]",
+            )}
           >
-            <span className="text-xs font-medium text-foreground/90 whitespace-nowrap">
+            <span className={cn(
+              "text-xs font-medium text-foreground/90 whitespace-nowrap",
+              "highlight" in a && a.highlight && "text-[hsl(var(--neon-purple))]",
+            )}>
               {a.label}
             </span>
-            <span className="w-9 h-9 rounded-full flex items-center justify-center gradient-flow text-white shadow-lg shadow-primary/30">
-              <a.icon className="w-4 h-4" />
+            <span className={cn(
+              "w-9 h-9 rounded-full flex items-center justify-center shadow-lg",
+              "highlight" in a && a.highlight
+                ? "bg-[hsl(var(--neon-purple)/0.15)] border border-[hsl(var(--neon-purple)/0.4)] shadow-[hsl(var(--neon-purple)/0.3)]"
+                : "gradient-flow text-white shadow-primary/30",
+            )}>
+              <a.icon className={cn(
+                "w-4 h-4",
+                "highlight" in a && a.highlight && "text-[hsl(var(--neon-purple))]",
+              )} />
             </span>
           </button>
         ))}

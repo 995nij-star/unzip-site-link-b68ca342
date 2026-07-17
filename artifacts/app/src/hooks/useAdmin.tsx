@@ -5,37 +5,48 @@ import { useAuth } from '@/hooks/useAuth';
 
 export function useAdmin() {
   const { user } = useAuth();
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['adminAccess', user?.id],
     queryFn: async () => {
       if (!user) return { isAdmin: false, isModerator: false };
 
+      // Primary: direct table read via ur_select_own RLS policy
+      // (each authenticated user can SELECT their own rows from user_roles)
+      const { data: roles, error: tableError } = await (supabase as any)
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id);
+
+      if (!tableError && Array.isArray(roles)) {
+        const roleSet = new Set<string>(roles.map((r: any) => String(r.role)));
+        console.log('[useAdmin] roles from table:', [...roleSet]);
+        return {
+          isAdmin: roleSet.has('admin') || roleSet.has('super_admin'),
+          isModerator: roleSet.has('moderator'),
+        };
+      }
+
+      console.warn('[useAdmin] table query failed, falling back to RPC:', tableError);
+
+      // Fallback: has_role() RPC (SECURITY DEFINER, bypasses RLS)
       const [adminResult, superAdminResult, moderatorResult] = await Promise.all([
         (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
         (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'super_admin' }),
         (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
       ]);
 
-      if (adminResult.error) {
-        console.warn('[useAdmin] has_role(admin) error:', adminResult.error);
-      }
-      if (superAdminResult.error) {
-        console.warn('[useAdmin] has_role(super_admin) error:', superAdminResult.error);
-      }
-      if (moderatorResult.error) {
-        console.warn('[useAdmin] has_role(moderator) error:', moderatorResult.error);
-      }
+      if (adminResult.error) console.warn('[useAdmin] has_role(admin) error:', adminResult.error);
+      if (superAdminResult.error) console.warn('[useAdmin] has_role(super_admin) error:', superAdminResult.error);
+      if (moderatorResult.error) console.warn('[useAdmin] has_role(moderator) error:', moderatorResult.error);
 
       const isAdmin = Boolean(adminResult.data) || Boolean(superAdminResult.data);
       const isModerator = Boolean(moderatorResult.data);
-
-      console.log('[useAdmin] role check — admin:', isAdmin, 'moderator:', isModerator);
-
+      console.log('[useAdmin] role check via RPC — admin:', isAdmin, 'moderator:', isModerator);
       return { isAdmin, isModerator };
     },
     enabled: !!user,
-    staleTime: 30 * 1000,
-    retry: 2,
+    staleTime: 60 * 1000,
+    retry: 3,
   });
 
   const isAdmin = data?.isAdmin ?? false;
@@ -46,6 +57,7 @@ export function useAdmin() {
     isModerator,
     hasAdminAccess: isAdmin || isModerator,
     isLoading: !!user && isLoading,
+    isError,
   };
 }
 // Hook for fetching admin dashboard stats
