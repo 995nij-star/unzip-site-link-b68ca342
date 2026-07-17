@@ -46,7 +46,7 @@ const STATUS_STYLE: Record<TransferStatus, { label: string; icon: JSX.Element; c
 };
 
 export default function SendMoney() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { balance, refetch: refetchWallet } = useWallet();
   const navigate = useNavigate();
   const { isEnabled: isPaymentEnabled } = usePaymentMethodLocks();
