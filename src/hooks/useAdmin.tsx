@@ -17,9 +17,12 @@ const [adminResult, moderatorResult] = await Promise.all([
   if (adminResult.error) throw adminResult.error;
 if (moderatorResult.error) throw moderatorResult.error;
 
-console.log("USER ID:", user.id);
-console.log("ADMIN RESULT:", adminResult);
-console.log("MODERATOR RESULT:", moderatorResult);
+alert(
+  `USER ID: ${user.id}
+ADMIN: ${adminResult.data}
+MODERATOR: ${moderatorResult.data}`
+);
+
 return {
   isAdmin: Boolean(adminResult.data),
   isModerator: Boolean(moderatorResult.data),
