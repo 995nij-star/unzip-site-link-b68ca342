@@ -46,7 +46,7 @@ const STATUS_STYLE: Record<TransferStatus, { label: string; icon: JSX.Element; c
 };
 
 export default function SendMoney() {
-  const { signOut } = useAuth();
+  const { signOut, user } = useAuth();
   const { balance, refetch: refetchWallet } = useWallet();
   const navigate = useNavigate();
   const { isEnabled: isPaymentEnabled } = usePaymentMethodLocks();
@@ -70,12 +70,17 @@ export default function SendMoney() {
   // ---- Persistent lists
   const [recipients, setRecipients] = useState<Recipient[]>([]);
   const [transfers, setTransfers] = useState<Transfer[]>([]);
-  const refresh = () => { setRecipients(listRecipients()); setTransfers(listTransfers()); };
+  const refresh = () => {
+    setRecipients(listRecipients(user?.id));
+    setTransfers(listTransfers(user?.id));
+  };
   useEffect(() => {
     refresh();
     const t = setInterval(refresh, 2000); // pick up simulated status progression
     return () => clearInterval(t);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
 
   // Whenever recipient country changes, default receive currency
   useEffect(() => { setReceiveCurrency(country.currency); }, [country]);
@@ -198,7 +203,8 @@ export default function SendMoney() {
         totalDebit,
         paymentMethod: payment,
         message: message.trim() || undefined,
-      });
+      }, user?.id);
+
 
       // If paying from wallet, hold the funds server-side (INR-equivalent).
       if (payment === "wallet") {
@@ -222,8 +228,9 @@ export default function SendMoney() {
           countryCode,
           currency: receiveCurrency,
           favorite: markFavorite,
-        });
+        }, user?.id);
       }
+
 
       // Close OTP dialog and show the premium success animation.
       setOtpOpen(false);

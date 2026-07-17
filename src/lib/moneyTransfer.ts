@@ -42,6 +42,7 @@ export interface Recipient {
   currency: Currency;
   favorite: boolean;
   createdAt: string;
+  ownerUserId?: string;
 }
 
 export interface Transfer {
@@ -60,7 +61,9 @@ export interface Transfer {
   createdAt: string;
   updatedAt: string;
   reference: string;
+  senderUserId?: string;
 }
+
 
 // ---- Static data ----
 
@@ -172,42 +175,53 @@ function writeJSON<T>(key: string, value: T) {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
-export function listRecipients(): Recipient[] {
-  return readJSON<Recipient[]>(RECIPIENTS_KEY, []).sort(
+export function listRecipients(userId?: string): Recipient[] {
+  const all = readJSON<Recipient[]>(RECIPIENTS_KEY, []);
+  const scoped = userId ? all.filter(r => (r.ownerUserId ?? null) === userId) : all;
+  return scoped.sort(
     (a, b) => Number(b.favorite) - Number(a.favorite) ||
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 }
 
-export function saveRecipient(r: Omit<Recipient, "id" | "createdAt" | "favorite"> & { favorite?: boolean }): Recipient {
-  const all = listRecipients();
+export function saveRecipient(
+  r: Omit<Recipient, "id" | "createdAt" | "favorite"> & { favorite?: boolean },
+  userId?: string
+): Recipient {
+  const all = readJSON<Recipient[]>(RECIPIENTS_KEY, []);
   const rec: Recipient = {
     ...r,
     favorite: r.favorite ?? false,
     id: crypto.randomUUID(),
     createdAt: new Date().toISOString(),
+    ownerUserId: userId ?? r.ownerUserId,
   };
   writeJSON(RECIPIENTS_KEY, [rec, ...all]);
   return rec;
 }
 
 export function toggleFavorite(id: string) {
-  const all = listRecipients().map(r => r.id === id ? { ...r, favorite: !r.favorite } : r);
+  const all = readJSON<Recipient[]>(RECIPIENTS_KEY, []).map(r => r.id === id ? { ...r, favorite: !r.favorite } : r);
   writeJSON(RECIPIENTS_KEY, all);
 }
 
 export function deleteRecipient(id: string) {
-  writeJSON(RECIPIENTS_KEY, listRecipients().filter(r => r.id !== id));
+  writeJSON(RECIPIENTS_KEY, readJSON<Recipient[]>(RECIPIENTS_KEY, []).filter(r => r.id !== id));
 }
 
-export function listTransfers(): Transfer[] {
-  return readJSON<Transfer[]>(TRANSFERS_KEY, []).sort(
+export function listTransfers(userId?: string): Transfer[] {
+  const all = readJSON<Transfer[]>(TRANSFERS_KEY, []);
+  const scoped = userId ? all.filter(t => (t.senderUserId ?? null) === userId) : all;
+  return scoped.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 }
 
-export function recordTransfer(t: Omit<Transfer, "id" | "createdAt" | "updatedAt" | "status" | "reference">): Transfer {
-  const all = listTransfers();
+export function recordTransfer(
+  t: Omit<Transfer, "id" | "createdAt" | "updatedAt" | "status" | "reference">,
+  userId?: string
+): Transfer {
+  const all = readJSON<Transfer[]>(TRANSFERS_KEY, []);
   const now = new Date().toISOString();
   const transfer: Transfer = {
     ...t,
@@ -216,19 +230,21 @@ export function recordTransfer(t: Omit<Transfer, "id" | "createdAt" | "updatedAt
     status: "pending",
     createdAt: now,
     updatedAt: now,
+    senderUserId: userId ?? t.senderUserId,
   };
   writeJSON(TRANSFERS_KEY, [transfer, ...all]);
   return transfer;
 }
 
 export function updateTransferStatus(id: string, status: TransferStatus, note?: string) {
-  const all = listTransfers().map(t =>
+  const all = readJSON<Transfer[]>(TRANSFERS_KEY, []).map(t =>
     t.id === id
       ? { ...t, status, updatedAt: new Date().toISOString(), message: note ? `${t.message ? t.message + " · " : ""}[admin] ${note}` : t.message }
       : t
   );
   writeJSON(TRANSFERS_KEY, all);
 }
+
 
 // ================= ADMIN CONTROL PLANE =================
 // Placeholder admin surface backed by localStorage. Replace with server APIs
