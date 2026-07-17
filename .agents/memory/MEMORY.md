@@ -1,0 +1,1 @@
+- [Lovable→Replit migration pattern](lovable-migration.md) — keep Supabase backend; stub Lovable-specific packages; Tailwind v3 via postcss not @tailwindcss/vite.

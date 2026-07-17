@@ -1,44 +1,62 @@
-# [Project name]
+# Idexopn — Premium Esports Platform
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+A full-featured gaming tournament and esports platform with wallet, clips, live streams, leaderboards, messaging, and a comprehensive admin panel. Ported from Lovable to Replit.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
+- Workflows manage the dev server — use Replit's workflow panel to start/stop
+- Frontend artifact: `artifacts/app/` — React + Vite, served at `/`
+- `pnpm --filter @workspace/app run dev` — run frontend locally (requires PORT + BASE_PATH env)
 - `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
 
 ## Stack
 
 - pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
+- Frontend: React 18, Vite, Tailwind CSS v3, shadcn/ui, react-router-dom v6
+- Backend: Supabase (auth, database, edge functions, realtime, storage) — external, not hosted here
+- State: TanStack Query v5
+- UI: Radix UI primitives + shadcn, Lucide icons, Framer Motion
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/app/src/` — all frontend source code
+- `artifacts/app/src/pages/` — 77 route pages (including 38 admin pages)
+- `artifacts/app/src/components/` — UI components
+- `artifacts/app/src/hooks/` — React hooks (useAuth, useAdmin, etc.)
+- `artifacts/app/src/integrations/supabase/` — Supabase client + generated types
+- `artifacts/app/src/contexts/` — ThemeContext, LanguageContext
+- `artifacts/app/src/lib/` — utilities, capacitor init, MCP stubs
+- `artifacts/app/tailwind.config.ts` — Tailwind v3 theme (neon color palette, Space Grotesk font)
+- `artifacts/app/src/index.css` — full CSS design system (light + dark modes, custom animations)
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- **Supabase backend is kept as-is** — auth, database, 20+ edge functions, realtime, and storage all run on Supabase. The Replit app is purely the frontend host.
+- **Lovable-specific packages removed** — `lovable-tagger`, `@lovable.dev/mcp-js`, `@lovable.dev/cloud-auth-js`, `virtual:pwa-register` all stubbed or removed.
+- **Tailwind v3 via postcss.config.js** — not @tailwindcss/vite (incompatible with the app's v3 config).
+- **Capacitor plugins kept** — `initCapacitor()` is called at boot but no-ops on web (`Capacitor.isNativePlatform()` returns false).
+- **react-router-dom BrowserRouter** — routes are not base-path-prefixed because the artifact is at `/`.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+- User auth (Supabase: email/password + Google OAuth)
+- Tournaments: join, compete, win prizes
+- Wallet: add money, send money, gift codes, withdrawals
+- Clips & Reels: upload, discover, follow creators
+- Live Streams: watch and host
+- Messages: direct messaging between users
+- Leaderboard, Search, Notifications, Premium
+- Full admin panel (users, wallets, fraud, KYC, AI assistant, site scanner, and more)
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Keep existing Supabase backend — do not migrate or replace it.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Both `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` must be set as env vars for the app to connect to Supabase.
+- Do not run `pnpm dev` at the workspace root — no dev script there. Use `pnpm --filter @workspace/app run dev` or the workflow.
+- Tailwind is v3 (not v4) — use `tailwind.config.ts` + `postcss.config.js`, not `@tailwindcss/vite`.
 
 ## Pointers
 
