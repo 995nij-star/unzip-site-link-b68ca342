@@ -203,7 +203,8 @@ export default function SendMoney() {
         totalDebit,
         paymentMethod: payment,
         message: message.trim() || undefined,
-      });
+      }, user?.id);
+
 
       // If paying from wallet, hold the funds server-side (INR-equivalent).
       if (payment === "wallet") {
