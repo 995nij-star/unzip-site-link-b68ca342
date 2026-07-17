@@ -14,8 +14,13 @@ const [adminResult, moderatorResult] = await Promise.all([
   (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
 ]);
 
-      if (adminResult.error) throw adminResult.error;
-      if (moderatorResult.error) throw moderatorResult.error;
+  if (adminResult.error) throw adminResult.error;
+if (moderatorResult.error) throw moderatorResult.error;
+
+console.log("USER ID:", user.id);
+console.log("ADMIN RESULT:", adminResult);
+console.log("MODERATOR RESULT:", moderatorResult);
+
 return {
   isAdmin: Boolean(adminResult.data),
   isModerator: Boolean(moderatorResult.data),
