@@ -127,7 +127,7 @@ var list_notifications_default = defineTool4({
 });
 
 // src/lib/mcp/index.ts
-var projectRef = "amrfcuopahfnpphzrzyz";
+var projectRef = "gfmklajfrwvjiujrfthb";
 var mcp_default = defineMcp({
   name: "xt-esports-mcp",
   title: "XT eSports",
