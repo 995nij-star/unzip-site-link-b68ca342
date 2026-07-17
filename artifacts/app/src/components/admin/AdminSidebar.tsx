@@ -151,7 +151,7 @@ export function AdminSidebar() {
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-sm font-orbitron font-bold text-foreground tracking-wider">
-                {isAdmin ? 'ADMIN' : 'MOD'}
+                ADMIN
               </h1>
               {totalPending > 0 && (
                 <span className="px-1.5 py-0.5 text-[9px] font-bold rounded-full bg-destructive/20 text-destructive min-w-[18px] text-center animate-pulse">
@@ -180,7 +180,6 @@ export function AdminSidebar() {
         {filteredGroups.map((group) => {
           const visibleItems = group.items.filter((item) => {
             if (item.url === "/admin/ai" && !aiSettings.enabled) return false;
-            if (item.adminOnly && !isAdmin) return false;
             return true;
           });
 
