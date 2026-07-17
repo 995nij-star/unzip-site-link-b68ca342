@@ -212,15 +212,27 @@ export default function Dashboard() {
     { label: t("dashboard.balance"), numValue: Math.round(balance), prefix: "₹", icon: Wallet, color: "text-[hsl(var(--neon-green))]", bgColor: "bg-[hsl(var(--neon-green)/0.1)]", borderColor: "border-[hsl(var(--neon-green)/0.2)]" },
   ];
 
-  return (
+return (
+  <>
+    <div
+      style={{
+        position: "fixed",
+        top: "10px",
+        left: "10px",
+        zIndex: 99999,
+        background: "black",
+        color: "lime",
+        padding: "10px",
+        fontSize: "12px",
+      }}
+    >
+      isAdmin: {String(isAdmin)}<br />
+      hasAdminAccess: {String(hasAdminAccess)}
+    </div>
+
     <div className="min-h-screen bg-background">
       {/* Ambient background effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[hsl(var(--neon-blue)/0.05)] rounded-full blur-[150px] animate-drift" />
-        <div className="absolute bottom-1/4 right-0 w-[400px] h-[400px] bg-[hsl(var(--neon-purple)/0.05)] rounded-full blur-[120px] animate-drift" style={{ animationDelay: "-5s" }} />
-        <div className="absolute top-1/2 left-0 w-[300px] h-[300px] bg-[hsl(var(--neon-pink)/0.04)] rounded-full blur-[100px] animate-drift" style={{ animationDelay: "-9s" }} />
-      </div>
-
       {/* Header */}
       <header className="sticky top-0 z-50 backdrop-blur-2xl bg-background/70 border-b border-border/40">
         <div className="container mx-auto px-4 py-3">
@@ -533,6 +545,6 @@ export default function Dashboard() {
           </Link>
         </div>
       </footer>
-    </div>
-  );
-}
+ </div>
+</>
+);
