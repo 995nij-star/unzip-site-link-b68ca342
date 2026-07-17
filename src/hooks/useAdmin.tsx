@@ -9,20 +9,17 @@ export function useAdmin() {
     queryKey: ['adminAccess', user?.id],
     queryFn: async () => {
       if (!user) return { isAdmin: false, isModerator: false };
-
-      const [adminResult, superAdminResult, moderatorResult] = await Promise.all([
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'super_admin' }),
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
-      ]);
+const [adminResult, moderatorResult] = await Promise.all([
+  (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
+  (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
+]);
 
       if (adminResult.error) throw adminResult.error;
       if (moderatorResult.error) throw moderatorResult.error;
-
-      return {
-        isAdmin: Boolean(adminResult.data || (!superAdminResult.error && superAdminResult.data)),
-        isModerator: Boolean(moderatorResult.data),
-      };
+return {
+  isAdmin: Boolean(adminResult.data),
+  isModerator: Boolean(moderatorResult.data),
+};
     },
     enabled: !!user,
     staleTime: 30 * 1000,
