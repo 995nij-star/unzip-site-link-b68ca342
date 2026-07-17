@@ -20,7 +20,6 @@ if (moderatorResult.error) throw moderatorResult.error;
 console.log("USER ID:", user.id);
 console.log("ADMIN RESULT:", adminResult);
 console.log("MODERATOR RESULT:", moderatorResult);
-
 return {
   isAdmin: Boolean(adminResult.data),
   isModerator: Boolean(moderatorResult.data),
@@ -32,6 +31,8 @@ return {
 
   const isAdmin = data?.isAdmin ?? false;
   const isModerator = data?.isModerator ?? false;
+
+
   return {
     isAdmin,
     isModerator,
@@ -39,7 +40,6 @@ return {
     isLoading: !!user && isLoading,
   };
 }
-
 // Hook for fetching admin dashboard stats
 export function useAdminStats() {
   const { hasAdminAccess } = useAdmin();
