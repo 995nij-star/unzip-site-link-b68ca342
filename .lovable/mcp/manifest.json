@@ -3,12 +3,12 @@
   "sdk_version": "0.22.2",
   "path": "/functions/v1/mcp",
   "auth": {
-  "type": "oauth",
-  "issuer": "https://gfmklajfrwvjiujrfthb.supabase.co/auth/v1",
-  "accepted_audiences": [
-    "authenticated"
-  ]
-}
+    "type": "oauth",
+    "issuer": "https://gfmklajfrwvjiujrfthb.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
   "mcp": {
     "server": {
       "name": "xt-esports-mcp",
