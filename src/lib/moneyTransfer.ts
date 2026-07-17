@@ -42,6 +42,7 @@ export interface Recipient {
   currency: Currency;
   favorite: boolean;
   createdAt: string;
+  ownerUserId?: string;
 }
 
 export interface Transfer {
@@ -60,7 +61,9 @@ export interface Transfer {
   createdAt: string;
   updatedAt: string;
   reference: string;
+  senderUserId?: string;
 }
+
 
 // ---- Static data ----
 
