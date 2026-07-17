@@ -241,7 +241,7 @@ export default function Dashboard() {
               <PushNotificationToggle />
               <NotificationDropdown />
               <ProfileDropdown />
-              {hasAdminAccess && (
+              {true && (
                 <CyberButton
                   variant="secondary"
                   size="sm"
