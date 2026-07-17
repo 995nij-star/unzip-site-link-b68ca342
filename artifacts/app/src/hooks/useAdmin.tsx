@@ -9,32 +9,37 @@ export function useAdmin() {
     queryKey: ['adminAccess', user?.id],
     queryFn: async () => {
       if (!user) return { isAdmin: false, isModerator: false };
-const [adminResult, moderatorResult] = await Promise.all([
-  (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
-  (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
-]);
 
-  if (adminResult.error) throw adminResult.error;
-if (moderatorResult.error) throw moderatorResult.error;
+      const [adminResult, superAdminResult, moderatorResult] = await Promise.all([
+        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
+        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'super_admin' }),
+        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
+      ]);
 
-alert(
-  `USER ID: ${user.id}
-ADMIN: ${adminResult.data}
-MODERATOR: ${moderatorResult.data}`
-);
+      if (adminResult.error) {
+        console.warn('[useAdmin] has_role(admin) error:', adminResult.error);
+      }
+      if (superAdminResult.error) {
+        console.warn('[useAdmin] has_role(super_admin) error:', superAdminResult.error);
+      }
+      if (moderatorResult.error) {
+        console.warn('[useAdmin] has_role(moderator) error:', moderatorResult.error);
+      }
 
-return {
-  isAdmin: Boolean(adminResult.data),
-  isModerator: Boolean(moderatorResult.data),
-};
+      const isAdmin = Boolean(adminResult.data) || Boolean(superAdminResult.data);
+      const isModerator = Boolean(moderatorResult.data);
+
+      console.log('[useAdmin] role check — admin:', isAdmin, 'moderator:', isModerator);
+
+      return { isAdmin, isModerator };
     },
     enabled: !!user,
     staleTime: 30 * 1000,
+    retry: 2,
   });
 
   const isAdmin = data?.isAdmin ?? false;
   const isModerator = data?.isModerator ?? false;
-
 
   return {
     isAdmin,
