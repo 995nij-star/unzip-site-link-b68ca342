@@ -46,6 +46,12 @@ export default function AddMoney() {
   const upiId = payment.upiId || "8415965913@fam";
   const qrCodeUrl = payment.qrCodeUrl || defaultQrCode;
 
+  const handleQrCodeError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    if (event.currentTarget.src !== defaultQrCode) {
+      event.currentTarget.src = defaultQrCode;
+    }
+  };
+
   const handleCopyUPI = () => {
     navigator.clipboard.writeText(upiId);
     setCopied(true);
@@ -189,6 +195,7 @@ export default function AddMoney() {
                     <img 
                       src={qrCodeUrl} 
                       alt="UPI QR Code" 
+                      onError={handleQrCodeError}
                       className="w-56 h-56 object-contain"
                     />
                   )}
