@@ -1,7 +1,8 @@
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatCard } from "@/components/admin/StatCard";
-import { useAdminStats } from "@/hooks/useAdmin";
+import { useAdminStats, useAdmin } from "@/hooks/useAdmin";
 import { useAdminPendingCounts } from "@/hooks/useAdminPendingCounts";
+import { AdminBootstrap } from "@/components/admin/AdminBootstrap";
 import { Users, Trophy, Wallet, TrendingUp, Loader2, Activity, ArrowUpRight, IndianRupee, Banknote, MessageSquare, AlertTriangle } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -10,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 export default function AdminDashboard() {
   const { data: stats, isLoading, error } = useAdminStats();
   const { data: pendingCounts } = useAdminPendingCounts();
+  const { isAdmin, isLoading: roleLoading } = useAdmin();
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -45,6 +47,9 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout title="Dashboard" description="Platform overview & analytics">
+      {/* Admin role bootstrap — shown when service-role row is missing */}
+      {!roleLoading && !isAdmin && <AdminBootstrap />}
+
       {/* Welcome Banner */}
       <div className="relative rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/8 via-neon-purple/5 to-neon-pink/5 p-5 sm:p-6 mb-6 overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
