@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "App"
+title = "Idexopn Esports Platform"
 version = "1.0.0"
 id = "artifacts/app"
 router = "path"

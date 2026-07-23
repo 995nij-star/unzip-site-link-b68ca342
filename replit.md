@@ -4,8 +4,8 @@ A full-featured gaming tournament and esports platform with wallet, clips, live 
 
 ## Run & Operate
 
-- Workflows manage the dev server — use Replit's workflow panel to start/stop
-- Frontend artifact: `artifacts/app/` — React + Vite, served at `/`
+- Managed workflow: **`artifacts/app: web`** — start/stop via Replit's workflow panel
+- Frontend artifact: `artifacts/app/` — React + Vite, served at `/` (port 23863)
 - `pnpm --filter @workspace/app run dev` — run frontend locally (requires PORT + BASE_PATH env)
 - `pnpm run typecheck` — full typecheck across all packages
 
