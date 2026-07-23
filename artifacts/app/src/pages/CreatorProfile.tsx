@@ -29,7 +29,7 @@ export default function CreatorProfile() {
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ["creator-profile", userId],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("profiles_public")
         .select("username, avatar_url, uid, free_fire_uid, created_at, is_verified")
         .eq("user_id", userId!)
@@ -86,7 +86,7 @@ export default function CreatorProfile() {
                     {profile.is_verified && <VerifiedBadge size="md" />}
                   </div>
                   {profile.uid && <p className="text-xs text-muted-foreground font-rajdhani">UID: {profile.uid}</p>}
-                  {profile.free_fire_uid && <p className="text-xs text-muted-foreground font-rajdhani">Free Fire UID: {profile.free_fire_uid}</p>}
+                  {(profile as any).free_fire_uid && <p className="text-xs text-muted-foreground font-rajdhani">Free Fire UID: {(profile as any).free_fire_uid}</p>}
                   {profile.created_at && (
                     <p className="text-xs text-muted-foreground font-rajdhani flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3 h-3" /> Joined {format(new Date(profile.created_at), "MMM yyyy")}

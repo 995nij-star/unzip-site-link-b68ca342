@@ -60,7 +60,7 @@ export default function Search() {
 
     try {
       // First find the profile by UID
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await (supabase as any)
         .from("profiles_public")
         .select("user_id, username, uid, avatar_url, free_fire_uid")
         .eq("uid", searchQuery.trim())

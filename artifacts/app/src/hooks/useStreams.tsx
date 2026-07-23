@@ -40,7 +40,7 @@ export function useStreams() {
         console.error("Error fetching streams:", error);
         return [];
       }
-      return (data || []) as LiveStream[];
+      return (data || []) as unknown as LiveStream[];
     },
   });
 
@@ -60,7 +60,7 @@ export function useStream(streamId: string) {
         .eq("id", streamId)
         .single();
       if (error) throw error;
-      return data as LiveStream;
+      return data as unknown as LiveStream;
     },
     enabled: !!streamId,
   });
@@ -74,7 +74,7 @@ export function useStream(streamId: string) {
         .eq("stream_id", streamId)
         .order("created_at", { ascending: true })
         .limit(200);
-      return (data || []) as StreamMessage[];
+      return (data || []) as unknown as StreamMessage[];
     },
     enabled: !!streamId,
   });
@@ -150,7 +150,7 @@ export function useStreamActions() {
   const createStream = useMutation({
     mutationFn: async (data: { title: string; description?: string; stream_url: string; platform: string }) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("live_streams").insert({
+      const { error } = await (supabase as any).from("live_streams").insert({
         user_id: user.id,
         title: data.title,
         stream_url: data.stream_url,
@@ -165,7 +165,7 @@ export function useStreamActions() {
   const sendMessage = useMutation({
     mutationFn: async (data: { stream_id: string; message: string }) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("stream_messages").insert({
+      const { error } = await (supabase as any).from("stream_messages").insert({
         stream_id: data.stream_id,
         user_id: user.id,
         message: data.message,
@@ -177,7 +177,7 @@ export function useStreamActions() {
   const sendReaction = useMutation({
     mutationFn: async (data: { stream_id: string; emoji: string }) => {
       if (!user) throw new Error("Not authenticated");
-      const { error } = await supabase.from("stream_reactions").insert({
+      const { error } = await (supabase as any).from("stream_reactions").insert({
         stream_id: data.stream_id,
         user_id: user.id,
         emoji: data.emoji,

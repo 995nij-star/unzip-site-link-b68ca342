@@ -54,7 +54,7 @@ export function RedeemGiftCode() {
         return;
       }
 
-      const { data, error } = await supabase.rpc("redeem_gift_code", {
+      const { data, error } = await (supabase as any).rpc("redeem_gift_code", {
         p_code: code.trim(),
       });
 

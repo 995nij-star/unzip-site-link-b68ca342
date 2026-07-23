@@ -22,8 +22,8 @@ export function useAdminPendingCounts() {
         supabase.from("withdrawal_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
         supabase.from("support_tickets").select("id", { count: "exact", head: true }).eq("status", "open"),
         supabase.from("mod_applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("detection_events").select("id", { count: "exact", head: true }).eq("status", "open"),
-        supabase.from("suspicious_activities").select("id", { count: "exact", head: true }).eq("status", "pending"),
+        (supabase as any).from("detection_events").select("id", { count: "exact", head: true }).eq("status", "open"),
+        (supabase as any).from("suspicious_activities").select("id", { count: "exact", head: true }).eq("status", "pending"),
       ]);
 
       return {

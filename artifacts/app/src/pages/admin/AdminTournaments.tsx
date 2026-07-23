@@ -146,13 +146,13 @@ export default function AdminTournaments() {
 
     let error;
     if (editingId) {
-      const result = await supabase
+      const result = await (supabase as any)
         .from('tournaments')
         .update(payload)
         .eq('id', editingId);
       error = result.error;
     } else {
-      const result = await supabase
+      const result = await (supabase as any)
         .from('tournaments')
         .insert(payload);
       error = result.error;
@@ -293,7 +293,7 @@ export default function AdminTournaments() {
   };
 
   const handleAssignWinner = async (tournamentId: string, participantId: string) => {
-    const { error } = await supabase.from("tournament_participants")
+    const { error } = await (supabase as any).from("tournament_participants")
       .update({ is_winner: true }).eq("id", participantId);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -387,9 +387,9 @@ export default function AdminTournaments() {
                 <TableRow key={tournament.id} className="border-border">
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      {tournament.image_url ? (
+                      {(tournament as any).image_url ? (
                         <img 
-                          src={tournament.image_url} 
+                          src={(tournament as any).image_url} 
                           alt={tournament.game}
                           className="w-10 h-10 rounded-lg object-cover border border-primary/20"
                         />

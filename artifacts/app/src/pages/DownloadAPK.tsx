@@ -25,7 +25,7 @@ const DownloadAPK = () => {
 
   useEffect(() => {
     const fetchLatest = async () => {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("apk_releases")
         .select("*")
         .not("file_url", "is", null)
@@ -53,9 +53,9 @@ const DownloadAPK = () => {
     setShowInstructions(true);
 
     // Increment download count
-    void supabase
+    void (supabase as any)
       .from("apk_releases")
-      .update({ download_count: (latestRelease.download_count || 0) + 1 })
+      .update({ download_count: ((latestRelease as any).download_count || 0) + 1 })
       .eq("id", latestRelease.id);
 
     // Trigger download/navigation (mobile-friendly)

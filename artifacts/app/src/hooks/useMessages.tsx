@@ -80,7 +80,7 @@ export function useConversations() {
             .select("user_id, username, avatar_url, uid, is_verified")
             .eq("user_id", participants[0].user_id)
             .single();
-          otherUser = profile || undefined;
+          otherUser = (profile as any) || undefined;
         }
 
         // Get last message
@@ -216,7 +216,7 @@ export function useMessageActions() {
       if (!user) throw new Error("Not authenticated");
 
       // Use secure server-side function to start conversation
-      const { data, error } = await supabase.rpc("start_conversation", {
+      const { data, error } = await (supabase as any).rpc("start_conversation", {
         p_other_user_id: otherUserId,
       });
 

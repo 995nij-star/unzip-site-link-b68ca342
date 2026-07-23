@@ -14,7 +14,7 @@ export function useProfileLikes(profileUserId: string) {
     queryFn: async () => {
       if (!user?.id) return false;
       
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('profile_likes')
         .select('id')
         .eq('user_id', user.id)
@@ -55,7 +55,7 @@ export function useProfileLikes(profileUserId: string) {
     mutationFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('profile_likes')
         .insert({
           user_id: user.id,
@@ -87,7 +87,7 @@ export function useProfileLikes(profileUserId: string) {
     mutationFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
       
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('profile_likes')
         .delete()
         .eq('user_id', user.id)

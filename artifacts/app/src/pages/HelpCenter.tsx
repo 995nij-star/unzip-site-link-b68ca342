@@ -161,7 +161,7 @@ export default function HelpCenter() {
     try {
       const screenshotUrls = await uploadScreenshots();
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("support_tickets")
         .insert({
           user_id: user?.id || null,
@@ -399,7 +399,7 @@ interface ContactFormProps {
   previewUrls: string[];
   screenshots: File[];
   removeScreenshot: (index: number) => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   handleFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

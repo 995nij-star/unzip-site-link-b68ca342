@@ -82,9 +82,9 @@ export function useTournaments() {
     try {
       const { data, error } = await supabase.rpc('join_tournament', {
         p_tournament_id: tournamentId,
-        p_player_name: playerName || null,
-        p_game_uid: gameUid || null,
-        p_phone_number: phoneNumber || null
+        p_player_name: playerName || undefined,
+        p_game_uid: gameUid || undefined,
+        p_phone_number: phoneNumber || undefined,
       });
 
       if (error) {

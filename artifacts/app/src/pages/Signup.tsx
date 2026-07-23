@@ -379,7 +379,7 @@ export default function Signup() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          await supabase
+          await (supabase as any)
             .from("profiles")
             .update({
               full_name: fullName.trim(),

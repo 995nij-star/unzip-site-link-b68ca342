@@ -82,8 +82,8 @@ export default function AIChatWidget() {
     recognition.onstart = () => setIsListening(true);
     recognition.onend = () => setIsListening(false);
     recognition.onerror = () => setIsListening(false);
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      const transcript = Array.from(event.results).map((r) => r[0].transcript).join("");
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join("");
       setInput(transcript);
       if (event.results[0]?.isFinal) setIsListening(false);
     };

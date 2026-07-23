@@ -81,12 +81,12 @@ export default function KycVerification() {
     }, "image/jpeg", 0.9);
   };
 
-  const submit = async () => {
+  const submit = async (): Promise<void> => {
     if (!user) return;
-    if (!fullName.trim()) return toast.error("Enter your full name");
-    if (!docFile) return toast.error("Upload your document image");
-    if (!selfieBlob) return toast.error("Capture your selfie");
-    if (docFile.size > 8 * 1024 * 1024) return toast.error("Document must be under 8MB");
+    if (!fullName.trim()) { toast.error("Enter your full name"); return; }
+    if (!docFile) { toast.error("Upload your document image"); return; }
+    if (!selfieBlob) { toast.error("Capture your selfie"); return; }
+    if (docFile.size > 8 * 1024 * 1024) { toast.error("Document must be under 8MB"); return; }
 
     setSubmitting(true);
     try {
@@ -118,7 +118,7 @@ export default function KycVerification() {
         updated_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("kyc_verifications")
         .upsert(payload, { onConflict: "user_id" });
       if (error) throw error;
@@ -174,7 +174,7 @@ export default function KycVerification() {
           <Alert className="border-yellow-500/40 bg-yellow-500/10">
             <Clock className="h-4 w-4 text-yellow-500" />
             <AlertTitle>Under review</AlertTitle>
-            <AlertDescription>Submitted on {new Date(kyc!.record!.submitted_at).toLocaleString()}. We'll notify you within 24 hours.</AlertDescription>
+            <AlertDescription>Submitted on {new Date((kyc!.record as any)!.submitted_at).toLocaleString()}. We'll notify you within 24 hours.</AlertDescription>
           </Alert>
         )}
         {status === "rejected" && (

@@ -54,7 +54,7 @@ export default function AdminDeveloperApi() {
     if (error) {
       toast({ title: "Failed to load API keys", description: error.message, variant: "destructive" });
     } else {
-      setKeys((data ?? []) as ApiKey[]);
+      setKeys((data ?? []) as unknown as ApiKey[]);
     }
     setLoading(false);
   };
@@ -72,7 +72,7 @@ export default function AdminDeveloperApi() {
     if (!revokeConfirm) return;
     setRevoking(true);
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("developer_api_keys")
       .update({ status: "revoked" })
       .eq("id", revokeConfirm.id);
@@ -96,7 +96,7 @@ export default function AdminDeveloperApi() {
   const setStatus = async (k: ApiKey, newStatus: "active" | "inactive") => {
     setBusyId(k.id);
     const { data: u } = await supabase.auth.getUser();
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("developer_api_keys")
       .update({ status: newStatus })
       .eq("id", k.id);

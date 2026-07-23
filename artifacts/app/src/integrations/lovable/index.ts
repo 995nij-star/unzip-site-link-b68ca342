@@ -16,7 +16,7 @@ export const lovable = {
     ) => {
       // Delegate to Supabase OAuth directly
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: provider === "lovable" ? "google" : provider,
+        provider: (provider === "lovable" ? "google" : provider) as any,
         options: {
           redirectTo: opts?.redirect_uri,
           queryParams: opts?.extraParams,

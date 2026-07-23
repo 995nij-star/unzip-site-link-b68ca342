@@ -486,21 +486,21 @@ export default function AdminUsers() {
                         <div className="flex items-center gap-2">
                           <Circle 
                             className={`w-2.5 h-2.5 ${
-                              isUserOnline(user.last_seen) 
+                              isUserOnline((user as any).last_seen) 
                                 ? 'fill-neon-green text-neon-green' 
                                 : 'fill-muted-foreground/50 text-muted-foreground/50'
                             }`} 
                           />
                           <span className={`font-rajdhani text-sm ${
-                            isUserOnline(user.last_seen) ? 'text-neon-green' : 'text-muted-foreground'
+                            isUserOnline((user as any).last_seen) ? 'text-neon-green' : 'text-muted-foreground'
                           }`}>
-                            {getOnlineStatusText(user.last_seen)}
+                            {getOnlineStatusText((user as any).last_seen)}
                           </span>
                         </div>
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="font-rajdhani">
-                          {isUserOnline(user.last_seen) ? 'Currently online' : `Last seen: ${user.last_seen ? format(new Date(user.last_seen), 'MMM dd, yyyy HH:mm') : 'Never'}`}
+                          {isUserOnline((user as any).last_seen) ? 'Currently online' : `Last seen: ${(user as any).last_seen ? format(new Date((user as any).last_seen), 'MMM dd, yyyy HH:mm') : 'Never'}`}
                         </p>
                       </TooltipContent>
                     </Tooltip>

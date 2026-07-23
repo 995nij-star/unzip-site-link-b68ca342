@@ -54,7 +54,7 @@ export default function AdminKyc() {
     return null;
   };
 
-  const decide = async (row: Kyc, status: "approved" | "rejected") => {
+  const decide = async (row: Kyc, status: "approved" | "rejected"): Promise<void> => {
     setActing(row.id);
     const update: any = {
       status,
@@ -69,7 +69,7 @@ export default function AdminKyc() {
     }
     const { error } = await supabase.from("kyc_verifications").update(update).eq("id", row.id);
     setActing(null);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`KYC ${status}`);
     load();
   };

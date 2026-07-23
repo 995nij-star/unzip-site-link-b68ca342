@@ -109,16 +109,19 @@ export default function Discover() {
         });
       }
 
-      const result: DiscoverCreator[] = profiles.map((p) => ({
-        user_id: p.user_id,
-        username: p.username,
-        avatar_url: p.avatar_url,
-        is_verified: p.is_verified || false,
-        clip_count: creatorMap[p.user_id]?.clip_count || 0,
-        total_likes: likesPerCreator[p.user_id] || 0,
-        total_views: creatorMap[p.user_id]?.total_views || 0,
-        games: Array.from(creatorMap[p.user_id]?.games || []),
-      }));
+      const result: DiscoverCreator[] = profiles.filter((p) => p.user_id != null).map((p) => {
+        const uid = p.user_id!;
+        return {
+          user_id: uid,
+          username: p.username,
+          avatar_url: p.avatar_url,
+          is_verified: p.is_verified || false,
+          clip_count: creatorMap[uid]?.clip_count || 0,
+          total_likes: likesPerCreator[uid] || 0,
+          total_views: creatorMap[uid]?.total_views || 0,
+          games: Array.from(creatorMap[uid]?.games || []),
+        };
+      });
 
       // Sort by score
       result.sort((a, b) => (b.total_likes + b.clip_count * 2 + b.total_views * 0.1) - (a.total_likes + a.clip_count * 2 + a.total_views * 0.1));

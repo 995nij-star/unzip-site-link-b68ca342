@@ -41,7 +41,7 @@ const AdminAPKManager = () => {
       .from("apk_releases")
       .select("*")
       .order("created_at", { ascending: false });
-    if (!error && data) setReleases(data);
+    if (!error && data) setReleases(data as unknown as ApkRelease[]);
     setLoading(false);
   };
 
@@ -91,9 +91,9 @@ const AdminAPKManager = () => {
         .getPublicUrl(fileName);
 
       // Insert release record
-      const { error: dbError } = await supabase.from("apk_releases").insert({
+      const { error: dbError } = await (supabase as any).from("apk_releases").insert({
         version: version.trim(),
-        file_size: formatFileSize(selectedFile.size),
+        file_size: selectedFile.size,
         file_url: urlData.publicUrl,
         min_android: minAndroid.trim(),
         release_notes: releaseNotes.trim() || null,

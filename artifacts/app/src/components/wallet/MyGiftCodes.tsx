@@ -45,12 +45,12 @@ export function MyGiftCodes() {
   useEffect(() => {
     if (!user) return;
     const fetchCodes = async () => {
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("gift_codes")
         .select("id, code, amount, max_uses, used_count, expiry, is_active, created_at")
         .eq("created_by", user.id)
         .order("created_at", { ascending: false });
-      if (data) setCodes(data.map(c => ({ ...c, amount: Number(c.amount) })));
+      if (data) setCodes((data as any[]).map((c: any) => ({ ...c, amount: Number(c.amount) })));
       setLoading(false);
     };
     fetchCodes();

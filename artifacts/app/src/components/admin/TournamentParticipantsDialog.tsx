@@ -94,7 +94,7 @@ export function TournamentParticipantsDialog({
   const toggleWinner = async (participantId: string, currentStatus: boolean) => {
     setUpdating(participantId);
 
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from('tournament_participants')
       .update({ is_winner: !currentStatus })
       .eq('id', participantId);

@@ -56,7 +56,7 @@ export function UserDetailsDialog({ open, onOpenChange, userId }: UserDetailsDia
       setLoading(true);
 
       // Fetch profile
-      const { data: profile } = await supabase
+      const { data: profile } = await (supabase as any)
         .from('profiles')
         .select('uid, username, full_name, email, phone, age, city, free_fire_uid, avatar_url, created_at, is_banned, last_seen')
         .eq('user_id', userId)

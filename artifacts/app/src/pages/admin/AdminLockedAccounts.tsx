@@ -57,7 +57,7 @@ export default function AdminLockedAccounts() {
       .order("locked_at", { ascending: false });
 
     if (!error && data) {
-      setLocks(data as AccountLock[]);
+      setLocks(data as unknown as AccountLock[]);
     }
     setLoading(false);
   };
@@ -67,7 +67,7 @@ export default function AdminLockedAccounts() {
   }, []);
 
   const handleUnlock = async (lock: AccountLock) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("account_locks")
       .update({
         is_locked: false,
@@ -87,7 +87,7 @@ export default function AdminLockedAccounts() {
   };
 
   const handleRelock = async (lock: AccountLock) => {
-    const { error } = await supabase
+    const { error } = await (supabase as any)
       .from("account_locks")
       .update({
         is_locked: true,
@@ -116,7 +116,7 @@ export default function AdminLockedAccounts() {
     const normalizedEmail = lockEmail.trim().toLowerCase();
 
     // Check if already exists
-    const { data: existing } = await supabase
+    const { data: existing } = await (supabase as any)
       .from("account_locks")
       .select("id")
       .eq("email", normalizedEmail)
@@ -124,7 +124,7 @@ export default function AdminLockedAccounts() {
 
     let error;
     if (existing) {
-      ({ error } = await supabase
+      ({ error } = await (supabase as any)
         .from("account_locks")
         .update({
           is_locked: true,
@@ -138,7 +138,7 @@ export default function AdminLockedAccounts() {
         })
         .eq("id", existing.id));
     } else {
-      ({ error } = await supabase.from("account_locks").insert({
+      ({ error } = await (supabase as any).from("account_locks").insert({
         email: normalizedEmail,
         is_locked: true,
         locked_by: user?.id || null,

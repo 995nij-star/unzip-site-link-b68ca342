@@ -181,7 +181,7 @@ export default function AdminUserLookup() {
     setActionLoading(true);
 
     const newVerified = !userData.profile.is_verified;
-    const { error } = await supabase.from("profiles").update({
+    const { error } = await (supabase as any).from("profiles").update({
       is_verified: newVerified,
       verified_by: newVerified ? currentUser.id : null,
       verified_at: newVerified ? new Date().toISOString() : null,
@@ -191,7 +191,7 @@ export default function AdminUserLookup() {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       if (newVerified) {
-        await supabase.from("notifications").insert({
+        await (supabase as any).from("notifications").insert({
           user_id: userData.profile.user_id,
           type: "verified",
           title: "Account Verified ✓",

@@ -38,7 +38,7 @@ export function useTopupRequests() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as TopupRequest[];
+      return data as unknown as TopupRequest[];
     },
     enabled: !!user,
   });
@@ -50,7 +50,7 @@ export function useTopupRequests() {
       if (!amount || amount <= 0) throw new Error('Enter a valid amount');
       if (!utr || !utr.trim()) throw new Error('UTR / Transaction ID is required');
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('topup_requests')
         .insert({
           user_id: user.id,
@@ -146,7 +146,7 @@ export function useAdminTopupRequests() {
         };
       });
 
-      return requestsWithUsers as TopupRequest[];
+      return requestsWithUsers as unknown as TopupRequest[];
     },
   });
 
@@ -184,6 +184,7 @@ export function useAdminTopupRequests() {
       }
 
       // Update wallet balance
+      if (!wallet) throw new Error('Wallet not found');
       const newBalance = Number(wallet.balance) + Number(request.amount);
       const { error: updateWalletError } = await supabase
         .from('wallets')
@@ -205,7 +206,7 @@ export function useAdminTopupRequests() {
       if (txError) throw txError;
 
       // Update request status
-      const { error: updateError } = await supabase
+      const { error: updateError } = await (supabase as any)
         .from('topup_requests')
         .update({
           status: 'approved',
@@ -238,7 +239,7 @@ export function useAdminTopupRequests() {
 
   const rejectRequest = useMutation({
     mutationFn: async ({ requestId, reason }: { requestId: string; reason?: string }) => {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('topup_requests')
         .update({
           status: 'rejected',

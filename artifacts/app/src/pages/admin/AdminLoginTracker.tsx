@@ -94,7 +94,7 @@ export default function AdminLoginTracker() {
         .order("logged_in_at", { ascending: false })
         .limit(500);
 
-      const records = (loginHistory || []) as LoginRecord[];
+      const records = (loginHistory || []) as unknown as LoginRecord[];
       const totalLogins = records.length;
 
       // Unique IPs

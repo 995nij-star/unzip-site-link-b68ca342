@@ -51,6 +51,7 @@ export default function AdminAIChatLogs() {
       // Aggregate by user
       const userMap = new Map<string, { count: number; lastAt: string }>();
       for (const row of chatData) {
+        if (!row.user_id) continue;
         const existing = userMap.get(row.user_id);
         if (!existing) {
           userMap.set(row.user_id, { count: 1, lastAt: row.created_at });

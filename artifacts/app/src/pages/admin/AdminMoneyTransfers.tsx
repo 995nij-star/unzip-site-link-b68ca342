@@ -36,7 +36,7 @@ async function refundWalletIfNeeded(t: Transfer | undefined) {
   if (!t || t.paymentMethod !== "wallet") return;
   const inr = Number((t.totalDebit * getExchangeRate(t.sendCurrency, "INR")).toFixed(2));
   if (inr <= 0) return;
-  const { error } = await supabase.rpc("wallet_refund_transfer", { _amount: inr, _ref: t.reference });
+  const { error } = await (supabase as any).rpc("wallet_refund_transfer", { _amount: inr, _ref: t.reference });
   if (error) toast.error(`Wallet refund failed: ${error.message}`);
 }
 

@@ -96,13 +96,13 @@ export function DiscoverCreators() {
         });
       }
 
-      const result: Creator[] = profiles.map((p) => ({
-        user_id: p.user_id,
+      const result: Creator[] = profiles.filter((p) => p.user_id != null).map((p) => ({
+        user_id: p.user_id!,
         username: p.username,
         avatar_url: p.avatar_url,
         is_verified: p.is_verified || false,
-        clip_count: clipCounts[p.user_id] || 0,
-        total_likes: likesPerCreator[p.user_id] || 0,
+        clip_count: clipCounts[p.user_id!] || 0,
+        total_likes: likesPerCreator[p.user_id!] || 0,
       }));
 
       // Sort by score (likes + clips*2)

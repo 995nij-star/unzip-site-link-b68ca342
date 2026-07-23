@@ -32,7 +32,7 @@ export function useLoginHistory() {
         console.error("Error fetching login history:", error);
         return [];
       }
-      return data as LoginRecord[];
+      return data as unknown as LoginRecord[];
     },
     enabled: !!user,
   });

@@ -93,7 +93,7 @@ export default function AdminSupportTickets() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as SupportTicket[];
+      return data as unknown as SupportTicket[];
     },
   });
 
@@ -115,7 +115,7 @@ export default function AdminSupportTickets() {
         updateData.resolved_at = new Date().toISOString();
       }
 
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("support_tickets")
         .update(updateData)
         .eq("id", id);

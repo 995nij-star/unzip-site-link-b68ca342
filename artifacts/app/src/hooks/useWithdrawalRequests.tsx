@@ -35,7 +35,7 @@ export function useWithdrawalRequests() {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as WithdrawalRequest[];
+      return data as unknown as WithdrawalRequest[];
     },
     enabled: !!user,
   });
@@ -71,7 +71,7 @@ export function useWithdrawalRequests() {
         throw new Error('You already have a pending withdrawal request');
       }
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('withdrawal_requests')
         .insert({
           user_id: user.id,
@@ -135,7 +135,7 @@ export function useAdminWithdrawalRequests() {
         };
       });
 
-      return requestsWithUsers as WithdrawalRequest[];
+      return requestsWithUsers as unknown as WithdrawalRequest[];
     },
   });
 
@@ -179,7 +179,7 @@ export function useAdminWithdrawalRequests() {
           user_id: request.user_id,
           amount: -request.amount,
           type: 'withdrawal',
-          description: `Withdrawal to UPI: ${request.upi_id}`,
+          description: `Withdrawal to UPI: ${(request as any).upi_id}`,
         });
 
       if (txError) throw txError;

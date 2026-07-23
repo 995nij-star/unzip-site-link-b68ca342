@@ -39,7 +39,7 @@ export function CreateGiftCode() {
 
     setCreating(true);
     try {
-      const { data, error } = await supabase.rpc("create_user_gift_code", {
+      const { data, error } = await (supabase as any).rpc("create_user_gift_code", {
         p_amount: amt,
         p_max_uses: uses,
       });

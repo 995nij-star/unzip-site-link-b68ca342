@@ -88,7 +88,7 @@ export default function AdminRolesManager() {
     if (!user) return;
     setClearing(target.user_id);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from("moderator_permissions")
         .delete()
         .eq("moderator_id", target.user_id);

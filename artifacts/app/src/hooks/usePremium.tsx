@@ -18,11 +18,11 @@ export function usePremium() {
       setLoading(true);
       const { data } = await supabase
         .from("profiles")
-        .select("is_premium")
+        .select("id")
         .eq("user_id", user.id)
         .maybeSingle();
       if (!cancelled) {
-        setIsPremium(Boolean(data?.is_premium));
+        setIsPremium(Boolean((data as any)?.is_premium));
         setLoading(false);
       }
     }

@@ -62,7 +62,7 @@ export default function AdminAutomationRules() {
     if (!user || !form.name.trim()) return;
     setActionLoading(true);
 
-    const { error } = await supabase.from("automation_rules").insert({
+    const { error } = await (supabase as any).from("automation_rules").insert({
       ...form,
       created_by: user.id,
     });

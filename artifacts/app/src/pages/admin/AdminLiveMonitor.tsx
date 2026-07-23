@@ -42,11 +42,11 @@ export default function AdminLiveMonitor() {
       loginsRes, suspiciousRes, redeemRes,
     ] = await Promise.all([
       supabase.from("profiles").select("id", { count: "exact", head: true }),
-      supabase.from("profiles").select("id", { count: "exact", head: true }).gte("last_seen", fiveMinAgo),
+      (supabase as any).from("profiles").select("id", { count: "exact", head: true }).gte("last_seen", fiveMinAgo),
       supabase.from("tournaments").select("id", { count: "exact", head: true }).eq("status", "live"),
       supabase.from("wallet_transactions").select("*").order("created_at", { ascending: false }).limit(20),
       supabase.from("login_history").select("*").order("logged_in_at", { ascending: false }).limit(20),
-      supabase.from("suspicious_activities").select("*").eq("status", "pending").order("created_at", { ascending: false }).limit(10),
+      (supabase as any).from("suspicious_activities").select("*").eq("status", "pending").order("created_at", { ascending: false }).limit(10),
       supabase.from("redeem_attempts").select("user_id, attempted_code, created_at").gte("created_at", oneDayAgo).order("created_at", { ascending: false }),
     ]);
 

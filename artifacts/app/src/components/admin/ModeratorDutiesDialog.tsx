@@ -62,13 +62,13 @@ export function ModeratorDutiesDialog({ open, onOpenChange, moderatorId, moderat
     if (!open) return;
     (async () => {
       setLoading(true);
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("moderator_permissions")
         .select("permission, notes")
         .eq("moderator_id", moderatorId);
       const s = new Set<string>();
       const n: Record<string, string> = {};
-      data?.forEach((r) => {
+      data?.forEach((r: any) => {
         s.add(r.permission);
         if (r.notes) n[r.permission] = r.notes;
       });
@@ -92,7 +92,7 @@ export function ModeratorDutiesDialog({ open, onOpenChange, moderatorId, moderat
     setSaving(true);
     try {
       // Wipe existing and re-insert selection (simple + atomic-ish for small sets)
-      await supabase.from("moderator_permissions").delete().eq("moderator_id", moderatorId);
+      await (supabase as any).from("moderator_permissions").delete().eq("moderator_id", moderatorId);
       if (selected.size > 0) {
         const rows = Array.from(selected).map((permission) => ({
           moderator_id: moderatorId,
@@ -100,7 +100,7 @@ export function ModeratorDutiesDialog({ open, onOpenChange, moderatorId, moderat
           assigned_by: user.id,
           notes: notes[permission]?.trim() || null,
         }));
-        const { error } = await supabase.from("moderator_permissions").insert(rows);
+        const { error } = await (supabase as any).from("moderator_permissions").insert(rows);
         if (error) throw error;
       }
       await supabase.from("admin_audit_log").insert({

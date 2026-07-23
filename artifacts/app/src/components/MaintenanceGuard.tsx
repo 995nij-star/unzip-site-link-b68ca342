@@ -31,7 +31,7 @@ export function MaintenanceGuard({ children }: { children: ReactNode }) {
 
       // Check if current user is admin
       if (user && cfg?.enabled && cfg?.allow_admins) {
-        const { data: isAdminResult } = await supabase.rpc("is_admin", { _user_id: user.id });
+        const { data: isAdminResult } = await (supabase as any).rpc("is_admin", { _user_id: user.id });
         setIsAdmin(!!isAdminResult);
       }
 

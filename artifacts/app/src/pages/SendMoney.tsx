@@ -37,7 +37,7 @@ import { usePaymentMethodLocks } from "@/hooks/usePaymentMethodLocks";
 import { format } from "date-fns";
 import { PaymentSuccessAnimation } from "@/components/wallet/PaymentSuccessAnimation";
 
-const STATUS_STYLE: Record<TransferStatus, { label: string; icon: JSX.Element; className: string }> = {
+const STATUS_STYLE: Record<TransferStatus, { label: string; icon: React.ReactElement; className: string }> = {
   pending:    { label: "Pending",    icon: <Clock className="w-3 h-3" />,        className: "bg-neon-orange/15 text-neon-orange border-neon-orange/40" },
   processing: { label: "Processing", icon: <Loader2 className="w-3 h-3 animate-spin" />, className: "bg-neon-blue/15 text-neon-blue border-neon-blue/40" },
   completed:  { label: "Completed",  icon: <CheckCircle2 className="w-3 h-3" />, className: "bg-neon-green/15 text-neon-green border-neon-green/40" },
@@ -208,7 +208,7 @@ export default function SendMoney() {
 
       // If paying from wallet, hold the funds server-side (INR-equivalent).
       if (payment === "wallet") {
-        const { error } = await supabase.rpc("wallet_hold_transfer", {
+        const { error } = await (supabase as any).rpc("wallet_hold_transfer", {
           _amount: walletDebitInInr,
           _ref: transfer.reference,
         });
@@ -700,7 +700,7 @@ function Row({ label, value, accent, bold }: { label: string; value: string; acc
   );
 }
 
-function EmptyState({ icon, title, sub }: { icon: JSX.Element; title: string; sub: string }) {
+function EmptyState({ icon, title, sub }: { icon: React.ReactElement; title: string; sub: string }) {
   return (
     <div className="text-center py-16 rounded-xl premium-card">
       <div className="mx-auto mb-4 text-muted-foreground w-fit">{icon}</div>

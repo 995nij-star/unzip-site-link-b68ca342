@@ -19,7 +19,7 @@ export function usePresence() {
 
     const updatePresence = async () => {
       try {
-        await supabase
+        await (supabase as any)
           .from('profiles')
           .update({ last_seen: new Date().toISOString() })
           .eq('user_id', user.id);

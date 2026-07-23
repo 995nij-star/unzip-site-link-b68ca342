@@ -78,7 +78,7 @@ export function useAnnouncements(showAll = false) {
             ...announcement,
             winner_profile,
             tournament,
-          } as Announcement;
+          } as unknown as Announcement;
         })
       );
 
@@ -91,7 +91,7 @@ export function useAnnouncements(showAll = false) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from("announcements")
         .insert({
           ...input,

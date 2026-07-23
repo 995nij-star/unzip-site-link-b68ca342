@@ -56,8 +56,8 @@ export function CopyModeratorDutiesDialog({
         await Promise.all([
           supabase.from("user_roles").select("user_id").eq("role", "moderator"),
           supabase.from("profiles").select("user_id, username, email, avatar_url"),
-          supabase.from("moderator_permissions").select("moderator_id"),
-          supabase
+          (supabase as any).from("moderator_permissions").select("moderator_id"),
+          (supabase as any)
             .from("moderator_permissions")
             .select("permission, notes")
             .eq("moderator_id", sourceModeratorId),
@@ -108,7 +108,7 @@ export function CopyModeratorDutiesDialog({
     setCopying(true);
     try {
       if (mode === "replace") {
-        const { error: delErr } = await supabase
+        const { error: delErr } = await (supabase as any)
           .from("moderator_permissions")
           .delete()
           .eq("moderator_id", target.user_id);
@@ -116,7 +116,7 @@ export function CopyModeratorDutiesDialog({
       }
 
       // Load existing to avoid unique-constraint failures on merge
-      const { data: existing } = await supabase
+      const { data: existing } = await (supabase as any)
         .from("moderator_permissions")
         .select("permission")
         .eq("moderator_id", target.user_id);
@@ -133,7 +133,7 @@ export function CopyModeratorDutiesDialog({
 
       let inserted = 0;
       if (rows.length > 0) {
-        const { error: insErr } = await supabase
+        const { error: insErr } = await (supabase as any)
           .from("moderator_permissions")
           .insert(rows);
         if (insErr) throw insErr;

@@ -50,7 +50,7 @@ export default function AdminMaintenanceMode() {
     if (!user) return;
     setSaving(true);
 
-    const { error } = await supabase.from("site_settings").upsert({
+    const { error } = await (supabase as any).from("site_settings").upsert({
       key: "maintenance_mode",
       value: config as any,
       updated_by: user.id,

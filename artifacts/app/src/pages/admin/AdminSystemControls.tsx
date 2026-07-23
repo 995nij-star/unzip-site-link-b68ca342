@@ -106,7 +106,7 @@ export default function AdminSystemControls() {
     if (!user) return;
     setActionLoading(key);
 
-    const { error } = await supabase.from("site_settings").upsert({
+    const { error } = await (supabase as any).from("site_settings").upsert({
       key, value: { enabled } as any, updated_by: user.id, updated_at: new Date().toISOString(),
     }, { onConflict: "key" });
 
@@ -133,7 +133,7 @@ export default function AdminSystemControls() {
     setAutoPilotLoading(true);
 
     const value = { enabled, ...autoPilotModuleStates };
-    const { error } = await supabase.from("site_settings").upsert({
+    const { error } = await (supabase as any).from("site_settings").upsert({
       key: "auto_pilot",
       value: value as any,
       updated_by: user.id,
@@ -167,7 +167,7 @@ export default function AdminSystemControls() {
     setAutoPilotModuleStates(newStates);
 
     const value = { enabled: autoPilotEnabled, ...newStates };
-    await supabase.from("site_settings").upsert({
+    await (supabase as any).from("site_settings").upsert({
       key: "auto_pilot",
       value: value as any,
       updated_by: user.id,
@@ -238,14 +238,14 @@ export default function AdminSystemControls() {
     const newToggles: Record<string, boolean> = {};
     for (const t of systemToggles) {
       const enabled = !activate;
-      await supabase.from("site_settings").upsert({
+      await (supabase as any).from("site_settings").upsert({
         key: t.key, value: { enabled } as any, updated_by: user.id, updated_at: new Date().toISOString(),
       }, { onConflict: "key" });
       newToggles[t.key] = enabled;
     }
 
     const now = new Date().toISOString();
-    await supabase.from("site_settings").upsert({
+    await (supabase as any).from("site_settings").upsert({
       key: "emergency_lock", value: { enabled: activate } as any, updated_by: user.id, updated_at: now,
     }, { onConflict: "key" });
 
@@ -255,7 +255,7 @@ export default function AdminSystemControls() {
       details: { activated: activate } as any,
     });
 
-    setToggles(newToggles);
+    setToggles(newToggles as any);
     setEmergencyActive(activate);
     if (activate) setLastActivatedAt(now);
     setEmergencyLockOpen(false);

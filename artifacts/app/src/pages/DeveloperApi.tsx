@@ -69,7 +69,7 @@ export default function DeveloperApi() {
 
   const loadKeys = async () => {
     if (!user) return;
-    const { data } = await supabase
+    const { data } = await (supabase as any)
       .from("developer_api_keys")
       .select("id, application_name, api_key, status, created_at, permissions")
       .order("created_at", { ascending: false });
@@ -104,7 +104,7 @@ export default function DeveloperApi() {
       const apiSecret = randomString(48, "xts_");
       const secretHash = await sha256(apiSecret);
 
-      const { error } = await supabase.from("developer_api_keys").insert({
+      const { error } = await (supabase as any).from("developer_api_keys").insert({
         user_id: user.id,
         developer_name: form.developer_name,
         email: form.email,
@@ -138,7 +138,7 @@ export default function DeveloperApi() {
     if (!user) return;
     setRevoking(true);
     try {
-      const { error } = await supabase.from("developer_api_keys").update({ status: "revoked" }).eq("id", id);
+      const { error } = await (supabase as any).from("developer_api_keys").update({ status: "revoked" }).eq("id", id);
       if (error) throw error;
 
       // Record audit log

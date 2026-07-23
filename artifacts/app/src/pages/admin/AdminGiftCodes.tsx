@@ -92,7 +92,7 @@ export default function AdminGiftCodes() {
         .select("*")
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data as GiftCode[];
+      return data as unknown as GiftCode[];
     },
   });
 
@@ -129,7 +129,7 @@ export default function AdminGiftCodes() {
 
   const createMutation = useMutation({
     mutationFn: async () => {
-      const { error } = await supabase.from("gift_codes").insert({
+      const { error } = await (supabase as any).from("gift_codes").insert({
         code: newCode.toUpperCase().trim(),
         amount: parseFloat(amount),
         max_uses: parseInt(maxUses),

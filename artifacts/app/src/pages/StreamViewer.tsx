@@ -56,7 +56,7 @@ export default function StreamViewer() {
 
   // Count reactions by emoji
   const reactionCounts: Record<string, number> = {};
-  reactions.forEach((r: { emoji: string }) => {
+  (reactions as any[]).forEach((r: { emoji: string }) => {
     reactionCounts[r.emoji] = (reactionCounts[r.emoji] || 0) + 1;
   });
 
