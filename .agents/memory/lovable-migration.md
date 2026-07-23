@@ -1,30 +1,33 @@
 ---
-name: Lovable-to-Replit migration pattern
-description: Key decisions and gotchas when porting a Lovable app to Replit's pnpm workspace, keeping Supabase as the backend.
+name: Lovable→Replit migration pattern
+description: Key decisions and quirks from porting this Lovable/Supabase esports app to Replit pnpm monorepo
 ---
 
-## Decision: Keep Supabase backend, host only the frontend on Replit
+## Supabase client key format
+The project uses new Supabase API keys (`sb_publishable_*`). These are opaque strings, not JWTs. A custom fetch wrapper in `artifacts/app/src/integrations/supabase/client.ts` strips the `Authorization: Bearer` header and uses `apikey` header instead. Do not remove this wrapper.
 
-**Why:** This app has 108 Supabase-using files, 20+ edge functions, realtime subscriptions, RLS, and storage. Full migration would be a separate large project. The user confirmed: keep Supabase.
+**Why:** Supabase's new key format breaks the default supabase-js client auth header logic.
 
-**How to apply:** Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` as workspace env vars. The Supabase client in `src/integrations/supabase/client.ts` picks them up at runtime.
+**How to apply:** Keep the `createSupabaseFetch` wrapper whenever regenerating or updating the client.
 
-## Packages to remove / stub from Lovable apps
+## Migration files location
+125 SQL migration files live in `supabase/migrations/`. They were originally in `.migration-backup/supabase/migrations/` and restored during setup. Do not delete `.migration-backup/` — it contains the original Lovable project source as a reference.
 
-- `lovable-tagger` — devDependency, drop from vite plugins (Lovable-only)
-- `@lovable.dev/mcp-js` — stub `src/lib/mcp/index.ts` and all tool files with `export default null`
-- `@lovable.dev/cloud-auth-js` — stub `src/integrations/lovable/index.ts` to delegate to supabase.auth.signInWithOAuth directly
-- `virtual:pwa-register` — remove `registerSW(...)` from main.tsx (comes from vite-plugin-pwa which is Lovable-hosted)
-- `@lovable.dev/mcp-js/stacks/supabase/vite` — drop from vite plugins
+## Edge functions
+23 Deno edge functions are in `supabase/functions/`. They use HTTPS imports (`https://deno.land/std`, `https://esm.sh/`) — no `deno.json` needed. Deployed via `.github/workflows/deploy-supabase-functions.yml` using `SUPABASE_PROJECT_REF` and `SUPABASE_ACCESS_TOKEN` GitHub secrets.
 
-## Tailwind v3 setup on Replit
+## Tailwind version
+Tailwind v3 via PostCSS — `tailwind.config.ts` + `postcss.config.js`. NOT `@tailwindcss/vite` (v4). Do not upgrade.
 
-**Why:** Lovable apps use Tailwind v3 (not v4). The pnpm workspace scaffold uses `@tailwindcss/vite` (v4). The copy script swaps to v3 + postcss.config.js, removes `@tailwindcss/vite`.
+**Why:** The app's CSS design system uses v3 config syntax. v4 would require a full CSS rewrite.
 
-**How to apply:** After copy script, vite.config.ts should NOT import tailwindcss. Use `postcss.config.js` with `{ tailwindcss: {}, autoprefixer: {} }`. The inline `css.postcss` in vite.config.ts conflicts — remove it and let postcss.config.js handle it.
+## Required secrets / env vars
+- `VITE_SUPABASE_URL` — set as plain env var (shared)
+- `VITE_SUPABASE_PUBLISHABLE_KEY` — set as plain env var (shared)
+- `SUPABASE_SERVICE_ROLE_KEY` — Replit Secret, used by API server bootstrap route only
 
-## Copy script installs packages but may fail on node: built-ins
+## Artifact registration
+The `artifacts/app` directory existed on import but wasn't registered in the Replit artifact system. Fix: temporarily move the directory, call `createArtifact`, then restore source files. The new artifact gets a fresh port (23863).
 
-The `fullstack-copy-frontend.sh` script tries to install all detected imports, including `node:child_process` and `node:path` (built-ins), which causes pnpm errors. This is safe to ignore — the script continues. After the script, manually install the real missing packages:
-- `react-router-dom`, `@supabase/supabase-js`, `@radix-ui/react-visually-hidden`, `react-markdown`
-- `@capacitor/core`, `@capacitor/push-notifications`, `@capacitor/status-bar`
+## API server
+Express server at `artifacts/api-server/`, served at `/api` (port 8080). Only has one real route: `POST /api/admin/bootstrap` — grants admin/super_admin roles to a user by upserting into `user_roles` table using service role key.

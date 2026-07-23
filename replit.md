@@ -4,10 +4,11 @@ A full-featured gaming tournament and esports platform with wallet, clips, live 
 
 ## Run & Operate
 
-- Managed workflow: **`artifacts/app: web`** — start/stop via Replit's workflow panel
-- Frontend artifact: `artifacts/app/` — React + Vite, served at `/` (port 23863)
-- `pnpm --filter @workspace/app run dev` — run frontend locally (requires PORT + BASE_PATH env)
+- Frontend: **`artifacts/app: web`** workflow — React + Vite, served at `/` (port 23863)
+- API server: **`artifacts/api-server: API Server`** workflow — Express, served at `/api` (port 8080)
+- `pnpm --filter @workspace/api-spec run codegen` — regenerate API types after spec changes
 - `pnpm run typecheck` — full typecheck across all packages
+- `node scripts/check-destructive-sql.mjs` — verify no destructive SQL in migrations
 
 ## Stack
 
@@ -55,8 +56,24 @@ A full-featured gaming tournament and esports platform with wallet, clips, live 
 ## Gotchas
 
 - Both `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` must be set as env vars for the app to connect to Supabase.
-- Do not run `pnpm dev` at the workspace root — no dev script there. Use `pnpm --filter @workspace/app run dev` or the workflow.
+- `SUPABASE_SERVICE_ROLE_KEY` is required by the API server's `POST /api/admin/bootstrap` route (stored as a Replit Secret).
+- Do not run `pnpm dev` at the workspace root — no dev script there. Use the artifact workflows.
 - Tailwind is v3 (not v4) — use `tailwind.config.ts` + `postcss.config.js`, not `@tailwindcss/vite`.
+- Supabase client uses a custom fetch wrapper to handle `sb_publishable_*` key format (strips the Authorization bearer header, uses `apikey` header instead).
+
+## GitHub Workflows
+
+- **`ci.yml`** — destructive SQL guard + pnpm build & typecheck on push/PR to main
+- **`deno.yml`** — Deno lint on `supabase/functions/` when edge function files change
+- **`deploy-supabase-functions.yml`** — deploys all 23 edge functions to Supabase on push to main (requires `SUPABASE_PROJECT_REF` and `SUPABASE_ACCESS_TOKEN` GitHub secrets)
+- **`generator-generic-ossf-slsa3-publish.yml`** — SLSA provenance
+
+## Supabase
+
+- Project ref: `gfmklajfrwvjiujrfthb`
+- 125 migration files in `supabase/migrations/`
+- 23 edge functions in `supabase/functions/`
+- Types generated in `artifacts/app/src/integrations/supabase/types.ts`
 
 ## Pointers
 
