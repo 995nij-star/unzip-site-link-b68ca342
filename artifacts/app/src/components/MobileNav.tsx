@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdmin } from "@/hooks/useAdmin";
+import { isAdminEmail } from "@/lib/adminAccess";
 import {
   Sheet,
   SheetContent,
@@ -31,8 +31,8 @@ import {
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
-  const { signOut } = useAuth();
-  const { isAdmin, hasAdminAccess } = useAdmin();
+  const { user, signOut } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -129,7 +129,7 @@ export function MobileNav() {
             );
           })}
 
-          {hasAdminAccess && (
+          {isAdmin && (
             <>
               <div className="mx-4 my-2 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
               <Link
@@ -154,7 +154,7 @@ export function MobileNav() {
                 <span className={`flex-1 text-sm tracking-wide ${
                   location.pathname.startsWith("/admin") ? "text-foreground font-semibold" : "text-muted-foreground group-hover:text-foreground"
                 }`}>
-                  {isAdmin ? "Admin Panel" : "Mod Panel"}
+                  Admin Panel
                 </span>
                 <Sparkles className="w-3.5 h-3.5 text-[hsl(var(--neon-purple)/0.6)]" />
               </Link>

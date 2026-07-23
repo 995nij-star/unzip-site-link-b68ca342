@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdmin } from "@/hooks/useAdmin";
+import { isAdminEmail } from "@/lib/adminAccess";
 import { Loader2, Shield } from "lucide-react";
 
 interface AdminProtectedRouteProps {
@@ -10,10 +10,8 @@ interface AdminProtectedRouteProps {
 
 export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
-  const { hasAdminAccess, isLoading: adminLoading } = useAdmin();
 
-  // Wait for both auth and role check to resolve
-  if (authLoading || (!!user && adminLoading)) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background cyber-grid">
         <div className="text-center space-y-4">
@@ -30,13 +28,8 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
     );
   }
 
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (!hasAdminAccess) {
-    return <Navigate to="/dashboard" replace />;
-  }
+  if (!user) return <Navigate to="/login" replace />;
+  if (!isAdminEmail(user.email)) return <Navigate to="/dashboard" replace />;
 
   return <>{children}</>;
 }

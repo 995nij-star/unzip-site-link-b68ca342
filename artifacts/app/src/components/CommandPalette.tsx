@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { isAdminEmail } from "@/lib/adminAccess";
 import {
   CommandDialog,
   CommandEmpty,
@@ -59,6 +61,8 @@ const COMMANDS: Cmd[] = [
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isAdmin = isAdminEmail(user?.email);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -71,7 +75,11 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const groups = ["Navigate", "Money", "Account", "Admin"] as const;
+  const groups = (
+    isAdmin
+      ? ["Navigate", "Money", "Account", "Admin"]
+      : ["Navigate", "Money", "Account"]
+  ) as ("Navigate" | "Money" | "Account" | "Admin")[];
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>

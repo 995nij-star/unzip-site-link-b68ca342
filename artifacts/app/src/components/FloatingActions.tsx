@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, Send, Wallet as WalletIcon, Command, X, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAdmin } from "@/hooks/useAdmin";
+import { useAuth } from "@/hooks/useAuth";
+import { isAdminEmail } from "@/lib/adminAccess";
 
 /**
  * Floating quick-action dial. Pure presentational — routes users to
@@ -13,7 +14,8 @@ export function FloatingActions() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { hasAdminAccess } = useAdmin();
+  const { user } = useAuth();
+  const hasAdminAccess = isAdminEmail(user?.email);
 
   const hidden =
     pathname.startsWith("/admin") ||
