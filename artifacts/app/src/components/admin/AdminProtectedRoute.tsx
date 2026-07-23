@@ -1,22 +1,19 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2, Shield } from "lucide-react";
 
 interface AdminProtectedRouteProps {
   children: ReactNode;
 }
 
-/**
- * Guards admin routes. Requires the user to be authenticated.
- * Data-level security is enforced by Supabase RLS — only users with
- * admin/moderator rows in user_roles can read admin data, so even if
- * an authenticated non-admin navigates here, all queries return empty.
- */
 export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
+  const { hasAdminAccess, isLoading: adminLoading } = useAdmin();
 
-  if (authLoading) {
+  // Wait for both auth and role check to resolve
+  if (authLoading || (!!user && adminLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background cyber-grid">
         <div className="text-center space-y-4">
@@ -35,6 +32,10 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (!hasAdminAccess) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
