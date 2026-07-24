@@ -41,5 +41,10 @@ export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABL
     storage: localStorage,
     persistSession: true,
     autoRefreshToken: true,
+    // Automatically parse the OAuth `?code=` / magic-link hash from the URL
+    // and exchange it for a session on load.
+    detectSessionInUrl: true,
+    // Use the PKCE flow for OAuth (Google) sign-in.
+    flowType: 'pkce',
   }
 });

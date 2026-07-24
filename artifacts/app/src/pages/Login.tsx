@@ -58,7 +58,7 @@ export default function Login() {
   const [lockoutMessage, setLockoutMessage] = useState("");
   const [loadingStage, setLoadingStage] = useState<string>("");
 
-  const { signIn } = useAuth();
+  const { signIn, user, session, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -72,6 +72,14 @@ export default function Login() {
       try { sessionStorage.setItem("post-login-next", nextPath); } catch {}
     }
   }, [nextPath]);
+
+  // If a valid session already exists (restored on refresh via onAuthStateChange),
+  // skip the login page entirely and send the user to their destination.
+  useEffect(() => {
+    if (!loading && user && session) {
+      navigate(nextPath ?? "/dashboard", { replace: true });
+    }
+  }, [loading, user, session, nextPath, navigate]);
   const { settings: s } = useLoginPageSettings();
   const { isDark, setUserDarkMode } = useTheme();
   const { language, setLanguage, languageNames } = useLanguage();
