@@ -40,7 +40,6 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.streams": "Live Streams",
     "nav.search": "Search Players",
     "nav.help": "Help Center",
-    "nav.admin": "Admin Panel",
 
     // Dashboard
     "dashboard.welcome": "Welcome Back, Commander!",
@@ -155,7 +154,6 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.streams": "लाइव स्ट्रीम",
     "nav.search": "खिलाड़ी खोजें",
     "nav.help": "सहायता केंद्र",
-    "nav.admin": "एडमिन पैनल",
 
     "dashboard.welcome": "वापस स्वागत है, कमांडर!",
     "dashboard.subtitle": "युद्धक्षेत्र पर राज करने के लिए तैयार?",
@@ -265,7 +263,6 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.streams": "লাইভ স্ট্রিম",
     "nav.search": "খেলোয়াড় খুঁজুন",
     "nav.help": "সহায়তা কেন্দ্র",
-    "nav.admin": "অ্যাডমিন প্যানেল",
 
     "dashboard.welcome": "স্বাগতম, কমান্ডার!",
     "dashboard.subtitle": "যুদ্ধক্ষেত্রে রাজত্ব করতে প্রস্তুত?",
@@ -375,7 +372,6 @@ export const translations: Record<Language, Record<string, string>> = {
     "nav.streams": "நேரடி ஸ்ட்ரீம்",
     "nav.search": "வீரர்களைத் தேடு",
     "nav.help": "உதவி மையம்",
-    "nav.admin": "நிர்வாக பேனல்",
 
     "dashboard.welcome": "மீண்டும் வருக, கமாண்டர்!",
     "dashboard.subtitle": "போர்க்களத்தில் ஆதிக்கம் செலுத்த தயாரா?",

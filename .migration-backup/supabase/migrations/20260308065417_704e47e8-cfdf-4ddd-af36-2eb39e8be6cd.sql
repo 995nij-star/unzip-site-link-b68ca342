@@ -1,1 +1,0 @@
-ALTER TABLE public.profiles ADD COLUMN free_fire_uid text DEFAULT NULL;

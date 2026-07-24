@@ -19,16 +19,6 @@ jobs:
         with:
           version: latest
 
-      - name: Deploy admin-ai-chat
-        run: supabase functions deploy admin-ai-chat --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Deploy admin-reset-password
-        run: supabase functions deploy admin-reset-password --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
       - name: Deploy arjun-era-detect
         run: supabase functions deploy arjun-era-detect --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
@@ -49,21 +39,6 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-      - name: Deploy cms-ai-chat
-        run: supabase functions deploy cms-ai-chat --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Deploy factory-reset
-        run: supabase functions deploy factory-reset --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Deploy fraud-detection
-        run: supabase functions deploy fraud-detection --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
       - name: Deploy kyc-ai-verify
         run: supabase functions deploy kyc-ai-verify --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
@@ -73,11 +48,6 @@ jobs:
 
       - name: Deploy moderate-content
         run: supabase functions deploy moderate-content --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Deploy send-ban-notification
-        run: supabase functions deploy send-ban-notification --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
@@ -103,11 +73,6 @@ jobs:
 
       - name: Deploy send-room-credentials
         run: supabase functions deploy send-room-credentials --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-
-      - name: Deploy site-health-scan
-        run: supabase functions deploy site-health-scan --project-ref ${{ secrets.SUPABASE_PROJECT_REF }}
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
