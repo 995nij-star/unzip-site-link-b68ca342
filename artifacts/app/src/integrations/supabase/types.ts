@@ -71,36 +71,6 @@ export type Database = {
         }
         Relationships: []
       }
-      admin_audit_log: {
-        Row: {
-          action: string
-          admin_id: string
-          created_at: string
-          details: Json | null
-          id: string
-          target_id: string | null
-          target_type: string
-        }
-        Insert: {
-          action: string
-          admin_id: string
-          created_at?: string
-          details?: Json | null
-          id?: string
-          target_id?: string | null
-          target_type: string
-        }
-        Update: {
-          action?: string
-          admin_id?: string
-          created_at?: string
-          details?: Json | null
-          id?: string
-          target_id?: string | null
-          target_type?: string
-        }
-        Relationships: []
-      }
       ai_chat_messages: {
         Row: {
           content: string
@@ -860,87 +830,6 @@ export type Database = {
         }
         Relationships: []
       }
-      mod_applications: {
-        Row: {
-          admin_notes: string | null
-          created_at: string
-          email: string
-          experience: string
-          gaming_knowledge: string
-          id: string
-          reason: string
-          reviewed_at: string | null
-          reviewed_by: string | null
-          status: string
-          updated_at: string
-          user_id: string
-          username: string
-        }
-        Insert: {
-          admin_notes?: string | null
-          created_at?: string
-          email: string
-          experience: string
-          gaming_knowledge?: string
-          id?: string
-          reason: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          updated_at?: string
-          user_id: string
-          username: string
-        }
-        Update: {
-          admin_notes?: string | null
-          created_at?: string
-          email?: string
-          experience?: string
-          gaming_knowledge?: string
-          id?: string
-          reason?: string
-          reviewed_at?: string | null
-          reviewed_by?: string | null
-          status?: string
-          updated_at?: string
-          user_id?: string
-          username?: string
-        }
-        Relationships: []
-      }
-      moderator_permissions: {
-        Row: {
-          created_at: string
-          duties: string | null
-          granted_by: string | null
-          id: string
-          moderator_id: string | null
-          permissions: Json | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          duties?: string | null
-          granted_by?: string | null
-          id?: string
-          moderator_id?: string | null
-          permissions?: Json | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          duties?: string | null
-          granted_by?: string | null
-          id?: string
-          moderator_id?: string | null
-          permissions?: Json | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       notifications: {
         Row: {
           created_at: string
@@ -1518,27 +1407,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          user_id?: string
-        }
-        Relationships: []
-      }
       wallet_transactions: {
         Row: {
           amount: number
@@ -1759,15 +1627,6 @@ export type Database = {
     Functions: {
       calculate_trust_score: { Args: { _user_id: string }; Returns: number }
       generate_unique_uid: { Args: never; Returns: string }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: { _user_id: string }; Returns: boolean }
-      is_admin_or_moderator: { Args: { _user_id: string }; Returns: boolean }
       is_conversation_participant: {
         Args: { _conversation_id: string; _user_id: string }
         Returns: boolean
@@ -1802,7 +1661,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "moderator" | "user"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1930,7 +1789,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "moderator", "user"],
     },
   },
 } as const

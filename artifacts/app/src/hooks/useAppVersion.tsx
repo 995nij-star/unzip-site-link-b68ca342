@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export interface AppVersion {
@@ -39,32 +39,3 @@ export function useAppVersion() {
   });
 }
 
-/**
- * Admin hook — update the version. Writes to the protected `site_settings` table.
- */
-export function useUpdateAppVersion() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (input: { version: string; release_notes?: string }) => {
-      const payload: AppVersion = {
-        version: input.version.trim(),
-        release_notes: input.release_notes?.trim() ?? "",
-        released_at: new Date().toISOString(),
-      };
-
-      const { error } = await supabase
-        .from("site_settings")
-        .upsert(
-          [{ key: "app_version", value: payload as any }],
-          { onConflict: "key" }
-        );
-
-      if (error) throw error;
-      return payload;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["app_version"] });
-    },
-  });
-}

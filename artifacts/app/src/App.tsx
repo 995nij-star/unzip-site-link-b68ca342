@@ -40,7 +40,6 @@ const TrendingClips = lazy(() => import("./pages/TrendingClips"));
 const CreatorProfile = lazy(() => import("./pages/CreatorProfile"));
 const FollowingClips = lazy(() => import("./pages/FollowingClips"));
 const Discover = lazy(() => import("./pages/Discover"));
-const ModeratorApply = lazy(() => import("./pages/ModeratorApply"));
 const ScreenRecord = lazy(() => import("./pages/ScreenRecord"));
 const AIChatWidgetGate = lazy(() => import("@/components/AIChatWidgetGate"));
 const Install = lazy(() => import("./pages/Install"));
@@ -142,7 +141,6 @@ const App = () => (
                 <Route path="/clip/:id" element={<ClipViewer />} />
                 <Route path="/c/:code" element={<ClipShortRedirect />} />
                 <Route path="/creator/:userId" element={<CreatorProfile />} />
-                <Route path="/moderator-apply" element={<ProtectedRoute><ModeratorApply /></ProtectedRoute>} />
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/premium" element={<ProtectedRoute><Premium /></ProtectedRoute>} />
                 <Route path="/verify-human" element={<ProtectedRoute><VerifyHuman /></ProtectedRoute>} />

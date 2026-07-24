@@ -26,7 +26,6 @@ import {
   Radio,
   MessageSquare,
   Film,
-  UserPlus,
   Sparkles,
   TrendingUp,
   ArrowUpRight,
@@ -191,15 +190,6 @@ export default function Dashboard() {
       iconBg: "bg-[hsl(var(--neon-pink)/0.12)]",
       iconColor: "text-[hsl(var(--neon-pink))]",
       link: "/clips",
-    },
-    {
-      icon: UserPlus,
-      title: "Apply for Moderator",
-      description: "Help moderate the community",
-      gradient: "from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-green))]",
-      iconBg: "bg-[hsl(var(--neon-cyan)/0.12)]",
-      iconColor: "text-[hsl(var(--neon-cyan))]",
-      link: "/moderator-apply",
     },
   ];
 

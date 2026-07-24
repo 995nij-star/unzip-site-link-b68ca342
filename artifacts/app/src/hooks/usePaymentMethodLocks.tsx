@@ -63,50 +63,5 @@ export function usePaymentMethodLocks() {
     [locks]
   );
 
-  const setEnabled = useCallback(
-    async (methodId: string, enabled: boolean) => {
-      const { data: authData } = await supabase.auth.getUser();
-      if (!authData.user) {
-        throw new Error("Admin session expired. Please sign in again.");
-      }
-
-      // Optimistic update
-      setLocks((prev) => ({
-        ...prev,
-        [methodId]: {
-          ...(prev[methodId] ?? { method_id: methodId, label: methodId, updated_at: "" }),
-          enabled,
-        },
-      }));
-      const rpcResult = await (supabase as any).rpc("set_payment_method_enabled", {
-        _method_id: methodId,
-        _enabled: enabled,
-      });
-
-      const message = rpcResult.error?.message?.toLowerCase?.() ?? "";
-      const functionMissing =
-        rpcResult.error?.code === "PGRST202" ||
-        (message.includes("function") && message.includes("not found"));
-
-      const { error } = functionMissing
-        ? await (supabase as any)
-            .from("payment_method_locks")
-            .update({
-              enabled,
-              updated_at: new Date().toISOString(),
-              updated_by: authData.user.id,
-            })
-            .eq("method_id", methodId)
-        : rpcResult;
-
-      if (error) {
-        // Revert on failure
-        await fetchLocks();
-        throw error;
-      }
-    },
-    [fetchLocks]
-  );
-
-  return { locks, loading, isEnabled, setEnabled, refetch: fetchLocks };
+  return { locks, loading, isEnabled, refetch: fetchLocks };
 }

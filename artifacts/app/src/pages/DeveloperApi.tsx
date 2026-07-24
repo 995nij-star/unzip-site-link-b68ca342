@@ -141,15 +141,6 @@ export default function DeveloperApi() {
       const { error } = await (supabase as any).from("developer_api_keys").update({ status: "revoked" }).eq("id", id);
       if (error) throw error;
 
-      // Record audit log
-      await supabase.from("admin_audit_log").insert({
-        admin_id: user.id,
-        action: "api_key_revoked",
-        target_type: "developer_api_key",
-        target_id: id,
-        details: { revoked_by: user.id, revoked_at: new Date().toISOString() },
-      });
-
       toast.success("Key revoked");
       setRevokeConfirm(null);
       loadKeys();

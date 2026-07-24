@@ -2,8 +2,6 @@ import { useEffect, useState, createContext, useContext, ReactNode } from 'react
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
-const STORAGE_KEY = 'xt_local_admin_session';
-
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -22,8 +20,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.removeItem(STORAGE_KEY);
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, nextSession) => {
@@ -88,7 +84,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem(STORAGE_KEY);
     setUser(null);
     setSession(null);
   };
