@@ -1,17 +1,33 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { isAdminEmail } from "@/lib/adminAccess";
+import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2, Shield } from "lucide-react";
 
 interface AdminProtectedRouteProps {
   children: ReactNode;
 }
 
+/**
+ * AdminProtectedRoute — production-grade admin route guard.
+ *
+ * Access is granted when:
+ *   • The user's email is the super-admin email, OR
+ *   • The user has an admin role in the database (user_roles or profiles.role)
+ *
+ * Unauthenticated visitors → /login
+ * Authenticated non-admins → / (home)
+ *
+ * Shows a loading screen while auth state or role query is in flight to
+ * prevent both flash-of-content and false redirects.
+ */
 export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
   const { user, loading: authLoading } = useAuth();
+  const { isAdmin, isLoading: roleLoading } = useAdmin();
 
-  if (authLoading) {
+  // Wait for auth AND role check to complete before making an access decision.
+  // This prevents false redirects while the role DB query is in flight.
+  if (authLoading || (!!user && roleLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background cyber-grid">
         <div className="text-center space-y-4">
@@ -28,8 +44,11 @@ export function AdminProtectedRoute({ children }: AdminProtectedRouteProps) {
     );
   }
 
+  // Not logged in → send to login
   if (!user) return <Navigate to="/login" replace />;
-  if (!isAdminEmail(user.email)) return <Navigate to="/dashboard" replace />;
+
+  // Logged in but not admin → redirect to home
+  if (!isAdmin) return <Navigate to="/" replace />;
 
   return <>{children}</>;
 }

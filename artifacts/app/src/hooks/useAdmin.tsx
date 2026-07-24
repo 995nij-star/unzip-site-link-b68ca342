@@ -2,16 +2,38 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { isAdminEmail } from '@/lib/adminAccess';
 
+/**
+ * useAdmin — production-grade authorization hook.
+ *
+ * isAdmin is true when ANY of the following hold:
+ *   1. The authenticated user's email is the super-admin email (fast, synchronous).
+ *   2. The user has an 'admin' or 'super_admin' row in the user_roles table.
+ *   3. The user's profiles.role column is 'admin' or 'super_admin'.
+ *
+ * The super-admin email (path 1) NEVER waits for a DB query — access is
+ * instant and cannot be revoked by database state.
+ *
+ * Paths 2 and 3 require DB queries and are subject to Supabase RLS. Neither
+ * the frontend hook nor the UI alone enforces security — Supabase RLS policies
+ * and the API server's email gate are the authoritative backend enforcement.
+ */
 export function useAdmin() {
   const { user } = useAuth();
+
+  // Fast synchronous path: super-admin email bypasses all DB checks.
+  const isSuperAdmin = isAdminEmail(user?.email);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ['adminAccess', user?.id],
     queryFn: async () => {
-      if (!user) return { isAdmin: false, isModerator: false };
+      if (!user) return { isAdminFromDB: false, isModerator: false };
 
-      // Primary: direct table read via ur_select_own RLS policy
-      // (each authenticated user can SELECT their own rows from user_roles)
+      // --- Check user_roles table ---
+      let isAdminFromRoles = false;
+      let isModerator = false;
+
       const { data: roles, error: tableError } = await (supabase as any)
         .from('user_roles')
         .select('role')
@@ -19,48 +41,73 @@ export function useAdmin() {
 
       if (!tableError && Array.isArray(roles)) {
         const roleSet = new Set<string>(roles.map((r: any) => String(r.role)));
-        console.log('[useAdmin] roles from table:', [...roleSet]);
-        return {
-          isAdmin: roleSet.has('admin') || roleSet.has('super_admin'),
-          isModerator: roleSet.has('moderator'),
-        };
+        console.log('[useAdmin] roles from user_roles table:', [...roleSet]);
+        isAdminFromRoles = roleSet.has('admin') || roleSet.has('super_admin');
+        isModerator = roleSet.has('moderator');
+      } else if (tableError) {
+        console.warn('[useAdmin] user_roles query failed, trying RPC:', tableError);
+
+        // Fallback: has_role() RPC (SECURITY DEFINER, bypasses RLS)
+        const [adminResult, superAdminResult, moderatorResult] = await Promise.all([
+          (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
+          (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'super_admin' }),
+          (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
+        ]);
+
+        isAdminFromRoles = Boolean(adminResult.data) || Boolean(superAdminResult.data);
+        isModerator = Boolean(moderatorResult.data);
+        console.log('[useAdmin] RPC result — admin:', isAdminFromRoles, 'moderator:', isModerator);
       }
 
-      console.warn('[useAdmin] table query failed, falling back to RPC:', tableError);
+      // --- Also check profiles.role ---
+      let isAdminFromProfile = false;
+      let isModeratorFromProfile = false;
 
-      // Fallback: has_role() RPC (SECURITY DEFINER, bypasses RLS)
-      const [adminResult, superAdminResult, moderatorResult] = await Promise.all([
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'admin' }),
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'super_admin' }),
-        (supabase as any).rpc('has_role', { _user_id: user.id, _role: 'moderator' }),
-      ]);
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (adminResult.error) console.warn('[useAdmin] has_role(admin) error:', adminResult.error);
-      if (superAdminResult.error) console.warn('[useAdmin] has_role(super_admin) error:', superAdminResult.error);
-      if (moderatorResult.error) console.warn('[useAdmin] has_role(moderator) error:', moderatorResult.error);
+      if (!profileError && profile) {
+        const profileRole = String((profile as any).role ?? 'user');
+        isAdminFromProfile = profileRole === 'admin' || profileRole === 'super_admin';
+        isModeratorFromProfile = profileRole === 'moderator';
+        console.log('[useAdmin] profiles.role:', profileRole);
+      }
 
-      const isAdmin = Boolean(adminResult.data) || Boolean(superAdminResult.data);
-      const isModerator = Boolean(moderatorResult.data);
-      console.log('[useAdmin] role check via RPC — admin:', isAdmin, 'moderator:', isModerator);
-      return { isAdmin, isModerator };
+      return {
+        isAdminFromDB: isAdminFromRoles || isAdminFromProfile,
+        isModerator: isModerator || isModeratorFromProfile,
+      };
     },
-    enabled: !!user,
+    // Super-admin email users always have access — skip the DB query for them.
+    enabled: !!user && !isSuperAdmin,
     staleTime: 60 * 1000,
     retry: 3,
   });
 
-  const isAdmin = data?.isAdmin ?? false;
+  // Combine: super-admin email OR DB-confirmed role
+  const isAdmin = isSuperAdmin || (data?.isAdminFromDB ?? false);
   const isModerator = data?.isModerator ?? false;
+
+  // isLoading is only meaningful when we're actually waiting for the DB query.
+  const isLoadingRole = !!user && !isSuperAdmin && isLoading;
 
   return {
     isAdmin,
+    isSuperAdmin,
     isModerator,
     hasAdminAccess: isAdmin || isModerator,
-    isLoading: !!user && isLoading,
+    isLoading: isLoadingRole,
     isError,
   };
 }
-// Hook for fetching admin dashboard stats
+
+// ─── Admin data hooks ────────────────────────────────────────────────────────
+// All hooks below gate their queries on hasAdminAccess so they never fire
+// for non-admin users, even if somehow reached.
+
 export function useAdminStats() {
   const { hasAdminAccess } = useAdmin();
 
@@ -83,7 +130,6 @@ export function useAdminStats() {
       const totalPrizePool = tournaments.reduce((sum, t) => sum + Number(t.prize_pool || 0), 0);
       const totalBalance = wallets.reduce((sum, w) => sum + Number(w.balance || 0), 0);
 
-      // Calculate revenue from entry fees
       const entryFeeRevenue = transactions
         .filter(t => t.type === 'entry_fee')
         .reduce((sum, t) => sum + Math.abs(Number(t.amount || 0)), 0);
@@ -99,56 +145,33 @@ export function useAdminStats() {
       };
     },
     enabled: hasAdminAccess,
-    staleTime: 30 * 1000, // Refresh every 30 seconds
+    staleTime: 30 * 1000,
   });
 }
 
-// Hook for fetching all users with their roles - with realtime updates
 export function useAdminUsers() {
   const { hasAdminAccess } = useAdmin();
   const queryClient = useQueryClient();
 
-  // Set up realtime subscription for profile changes
   useEffect(() => {
     if (!hasAdminAccess) return;
 
     const channel = supabase
       .channel('admin-users-realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'profiles',
-        },
-        () => {
-          // Invalidate and refetch when any profile changes
-          queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_roles',
-        },
-        () => {
-          // Invalidate and refetch when any role changes
-          queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
-        }
-      )
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'user_roles' }, () => {
+        queryClient.invalidateQueries({ queryKey: ['adminUsers'] });
+      })
       .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [hasAdminAccess, queryClient]);
 
   return useQuery({
     queryKey: ['adminUsers'],
     queryFn: async () => {
-      // Fetch profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('*')
@@ -156,18 +179,16 @@ export function useAdminUsers() {
 
       if (profilesError) throw profilesError;
 
-      // Fetch all user roles
       const { data: roles, error: rolesError } = await supabase
         .from('user_roles')
         .select('user_id, role');
 
       if (rolesError) throw rolesError;
 
-      // Merge profiles with roles
       const usersWithRoles = profiles.map(profile => {
         const userRoles = roles?.filter(r => r.user_id === profile.user_id) ?? [];
-        const highestRole = userRoles.find(r => r.role === 'admin')?.role 
-          || userRoles.find(r => r.role === 'moderator')?.role 
+        const highestRole = userRoles.find(r => r.role === 'admin')?.role
+          || userRoles.find(r => r.role === 'moderator')?.role
           || 'user';
         return {
           ...profile,
@@ -178,11 +199,10 @@ export function useAdminUsers() {
       return usersWithRoles;
     },
     enabled: hasAdminAccess,
-    refetchInterval: 30000, // Also poll every 30 seconds as backup
+    refetchInterval: 30000,
   });
 }
 
-// Hook for fetching all tournaments with admin access
 export function useAdminTournaments() {
   const { hasAdminAccess } = useAdmin();
 
@@ -201,7 +221,6 @@ export function useAdminTournaments() {
   });
 }
 
-// Hook for fetching all wallets
 export function useAdminWallets() {
   const { hasAdminAccess } = useAdmin();
 
@@ -215,20 +234,15 @@ export function useAdminWallets() {
 
       if (walletsError) throw walletsError;
 
-      // Get profiles to show usernames
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, username');
 
       if (profilesError) throw profilesError;
 
-      // Merge wallet data with usernames
       const walletsWithUsers = wallets.map(wallet => {
         const profile = profiles?.find(p => p.user_id === wallet.user_id);
-        return {
-          ...wallet,
-          username: profile?.username ?? 'Unknown',
-        };
+        return { ...wallet, username: profile?.username ?? 'Unknown' };
       });
 
       return walletsWithUsers;
@@ -237,7 +251,6 @@ export function useAdminWallets() {
   });
 }
 
-// Hook for fetching all transactions
 export function useAdminTransactions() {
   const { hasAdminAccess } = useAdmin();
 
@@ -252,20 +265,15 @@ export function useAdminTransactions() {
 
       if (transactionsError) throw transactionsError;
 
-      // Get profiles to show usernames
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
         .select('user_id, username');
 
       if (profilesError) throw profilesError;
 
-      // Merge transaction data with usernames
       const transactionsWithUsers = transactions.map(tx => {
         const profile = profiles?.find(p => p.user_id === tx.user_id);
-        return {
-          ...tx,
-          username: profile?.username ?? 'Unknown',
-        };
+        return { ...tx, username: profile?.username ?? 'Unknown' };
       });
 
       return transactionsWithUsers;

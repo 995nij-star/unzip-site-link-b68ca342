@@ -2,20 +2,21 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Plus, Send, Wallet as WalletIcon, Command, X, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/hooks/useAuth";
-import { isAdminEmail } from "@/lib/adminAccess";
+import { useAdmin } from "@/hooks/useAdmin";
 
 /**
  * Floating quick-action dial. Pure presentational — routes users to
  * existing wallet/transfer flows. Hidden on auth & admin routes to
  * avoid cluttering those surfaces.
+ *
+ * Admin Panel button is only shown when useAdmin().isAdmin is true,
+ * which requires either the super-admin email or a DB role grant.
  */
 export function FloatingActions() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { user } = useAuth();
-  const hasAdminAccess = isAdminEmail(user?.email);
+  const { isAdmin } = useAdmin();
 
   const hidden =
     pathname.startsWith("/admin") ||
@@ -30,7 +31,7 @@ export function FloatingActions() {
   if (hidden) return null;
 
   const actions = [
-    ...(hasAdminAccess
+    ...(isAdmin
       ? [{ label: "Admin Panel", icon: Shield, path: "/admin", highlight: true }]
       : []),
     { label: "Send Money", icon: Send, path: "/wallet/send" },

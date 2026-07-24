@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useWallet } from "@/hooks/useWallet";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { isAdminEmail } from "@/lib/adminAccess";
+import { useAdmin } from "@/hooks/useAdmin";
 import { useGlobalCredentials } from "@/hooks/useGlobalCredentials";
 import { useNavigate, Link } from "react-router-dom";
 import { CyberButton } from "@/components/ui/cyber-button";
@@ -105,7 +105,7 @@ AnimatedStatCard.displayName = "AnimatedStatCard";
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { balance } = useWallet();
-  const isAdmin = isAdminEmail(user?.email);
+  const { isAdmin } = useAdmin();
   const { credentials: globalCreds } = useGlobalCredentials();
   const { profile } = useProfile();
   const { data: appVersion } = useAppVersion();

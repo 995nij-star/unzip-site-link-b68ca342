@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
-import { isAdminEmail } from "@/lib/adminAccess";
+import { useAdmin } from "@/hooks/useAdmin";
 import {
   CommandDialog,
   CommandEmpty,
@@ -58,11 +57,16 @@ const COMMANDS: Cmd[] = [
   { label: "Admin Settings", path: "/admin/settings", icon: Settings, group: "Admin" },
 ];
 
+/**
+ * Global command palette (⌘K / Ctrl+K).
+ * Admin commands are only shown to confirmed admin users (useAdmin hook).
+ * Navigating to an admin URL as a non-admin will still be blocked by
+ * AdminProtectedRoute — this is a defense-in-depth UI measure.
+ */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const isAdmin = isAdminEmail(user?.email);
+  const { isAdmin } = useAdmin();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

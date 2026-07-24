@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { isAdminEmail } from "@/lib/adminAccess";
+import { useAdmin } from "@/hooks/useAdmin";
 import {
   Sheet,
   SheetContent,
@@ -32,7 +32,7 @@ import {
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const isAdmin = isAdminEmail(user?.email);
+  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -129,6 +129,7 @@ export function MobileNav() {
             );
           })}
 
+          {/* Admin Panel — only rendered for confirmed admin users */}
           {isAdmin && (
             <>
               <div className="mx-4 my-2 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
