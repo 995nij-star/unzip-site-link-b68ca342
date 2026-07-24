@@ -284,7 +284,7 @@ export function ProfileEditDialog({ open, onOpenChange, onProfileUpdated }: Prof
             </Label>
             <div className="p-3 rounded-lg bg-background/50 border border-primary/30">
               <p className="font-orbitron font-bold text-primary tracking-widest">
-                {profile?.uid || "Loading..."}
+                {profile?.uid ?? "—"}
               </p>
             </div>
             <p className="text-xs text-muted-foreground">

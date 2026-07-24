@@ -28,7 +28,7 @@ export function useProfile() {
       setLoading(false);
       return;
     }
-    
+
     setLoading(true);
     const { data, error } = await supabase
       .from("profiles")
@@ -36,9 +36,26 @@ export function useProfile() {
       .eq("user_id", user.id)
       .single();
 
-    if (!error && data) {
-      setProfile(data);
+    if (error || !data) {
+      setLoading(false);
+      return;
     }
+
+    // If the profile has no UID, generate one now via the DB function and save it.
+    if (!data.uid) {
+      const { data: newUid, error: rpcError } = await supabase.rpc(
+        "generate_unique_uid"
+      );
+      if (!rpcError && newUid) {
+        await supabase
+          .from("profiles")
+          .update({ uid: newUid } as any)
+          .eq("user_id", user.id);
+        data.uid = newUid as string;
+      }
+    }
+
+    setProfile(data);
     setLoading(false);
   };
 

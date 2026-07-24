@@ -136,7 +136,7 @@ export function ProfileDropdown() {
                   {t("profile.yourUid")}
                 </p>
                 <p className="font-orbitron font-bold text-lg text-primary tracking-widest">
-                  {profile?.uid || "Loading..."}
+                  {loading ? "Loading..." : (profile?.uid ?? "—")}
                 </p>
               </div>
               <button
