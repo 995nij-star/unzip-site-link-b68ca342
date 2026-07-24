@@ -1,1 +1,2 @@
 - [Lovable→Replit migration pattern](lovable-migration.md) — keep Supabase backend; stub Lovable-specific packages; Tailwind v3 via postcss not @tailwindcss/vite.
+- [UID auto-assignment fix](uid-fix.md) — two silent DB bugs blocked frontend uid assignment: missing GRANT on generate_unique_uid() + trigger blocked NULL→value uid writes.

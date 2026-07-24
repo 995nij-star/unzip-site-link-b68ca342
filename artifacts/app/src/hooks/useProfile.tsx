@@ -41,17 +41,21 @@ export function useProfile() {
       return;
     }
 
-    // If the profile has no UID, generate one now via the DB function and save it.
+    // If the profile has no UID, generate one via the DB function and save it.
+    // generate_unique_uid() is SECURITY DEFINER and GRANT'd to authenticated users.
+    // The protect_profile_fields trigger allows NULL → value uid assignment.
     if (!data.uid) {
       const { data: newUid, error: rpcError } = await supabase.rpc(
         "generate_unique_uid"
       );
       if (!rpcError && newUid) {
-        await supabase
+        const { error: updateError } = await supabase
           .from("profiles")
           .update({ uid: newUid } as any)
           .eq("user_id", user.id);
-        data.uid = newUid as string;
+        if (!updateError) {
+          data.uid = newUid as string;
+        }
       }
     }
 
