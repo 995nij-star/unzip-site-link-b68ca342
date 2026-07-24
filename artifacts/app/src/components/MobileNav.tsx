@@ -19,6 +19,7 @@ import {
   HelpCircle,
   Home,
   Shield,
+  History,
   LogOut,
   Gamepad2,
   Download,
@@ -51,7 +52,7 @@ export function MobileNav() {
     { icon: Wallet, label: "Wallet", href: "/wallet", color: "from-[hsl(var(--neon-green))] to-[hsl(var(--neon-cyan))]", iconColor: "text-[hsl(var(--neon-green))]", activeBg: "bg-[hsl(var(--neon-green)/0.1)]" },
     { icon: Users, label: "Leaderboard", href: "/leaderboard", color: "from-[hsl(var(--neon-gold))] to-[hsl(var(--neon-orange))]", iconColor: "text-[hsl(var(--neon-gold))]", activeBg: "bg-[hsl(var(--neon-gold)/0.1)]" },
     { icon: Search, label: "Find Player", href: "/search", color: "from-[hsl(var(--neon-purple))] to-[hsl(var(--neon-pink))]", iconColor: "text-[hsl(var(--neon-purple))]", activeBg: "bg-[hsl(var(--neon-purple)/0.1)]" },
-    { icon: Shield, label: "Session Log", href: "/sessions", color: "from-[hsl(var(--neon-purple))] to-[hsl(var(--neon-blue))]", iconColor: "text-[hsl(var(--neon-purple))]", activeBg: "bg-[hsl(var(--neon-purple)/0.1)]" },
+    { icon: History, label: "Session Log", href: "/sessions", color: "from-[hsl(var(--neon-purple))] to-[hsl(var(--neon-blue))]", iconColor: "text-[hsl(var(--neon-purple))]", activeBg: "bg-[hsl(var(--neon-purple)/0.1)]" },
     { icon: HelpCircle, label: "Help Center", href: "/help", color: "from-[hsl(var(--neon-cyan))] to-[hsl(var(--neon-blue))]", iconColor: "text-[hsl(var(--neon-cyan))]", activeBg: "bg-[hsl(var(--neon-cyan)/0.1)]" },
     { icon: Download, label: "Install App", href: "/install", color: "from-[hsl(var(--neon-pink))] to-[hsl(var(--neon-purple))]", iconColor: "text-[hsl(var(--neon-pink))]", activeBg: "bg-[hsl(var(--neon-pink)/0.1)]" },
   ];
