@@ -93,7 +93,7 @@ export default function AuthCallback() {
             .from("profiles")
             .select("is_banned")
             .eq("user_id", session.user.id)
-            .single();
+            .maybeSingle();
 
           if (profile?.is_banned) {
             const { data: banLog } = await supabase
