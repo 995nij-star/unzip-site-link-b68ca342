@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAdmin } from '@/hooks/useAdmin';
-
 export interface BanAuditLogEntry {
   id: string;
   user_id: string;
@@ -23,8 +21,6 @@ interface BanAuditLogFilters {
 }
 
 export function useBanAuditLog(filters?: BanAuditLogFilters) {
-  const { hasAdminAccess } = useAdmin();
-
   return useQuery({
     queryKey: ['banAuditLog', filters],
     queryFn: async () => {
@@ -73,7 +69,7 @@ export function useBanAuditLog(filters?: BanAuditLogFilters) {
 
       return logsWithUsernames;
     },
-    enabled: hasAdminAccess,
+    enabled: true,
   });
 }
 

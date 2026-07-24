@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { isAdminEmail } from "@/lib/adminAccess";
 import { Loader2, CheckCircle, XCircle, Gamepad2 } from "lucide-react";
 import { CyberButton } from "@/components/ui/cyber-button";
 
@@ -68,7 +67,7 @@ export default function AuthCallback() {
             sessionStorage.removeItem("post-login-next");
           } catch {}
           setTimeout(() => {
-            navigate(nextPath ?? (isAdminEmail(data.session.user.email) ? "/admin" : "/dashboard"));
+            navigate(nextPath ?? "/dashboard");
           }, 1500);
         } else {
           // No session yet - might still be processing
@@ -91,7 +90,7 @@ export default function AuthCallback() {
               sessionStorage.removeItem("post-login-next");
             } catch {}
             setTimeout(() => {
-              navigate(nextPath ?? (isAdminEmail(retryData.session.user.email) ? "/admin" : "/dashboard"));
+              navigate(nextPath ?? "/dashboard");
             }, 1500);
           } else {
             setStatus("success");

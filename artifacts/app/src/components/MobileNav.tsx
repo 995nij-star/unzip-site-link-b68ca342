@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useAdmin } from "@/hooks/useAdmin";
 import {
   Sheet,
   SheetContent,
@@ -18,13 +17,11 @@ import {
   Search,
   HelpCircle,
   Home,
-  Shield,
   History,
   LogOut,
   Gamepad2,
   Download,
   ChevronRight,
-  Sparkles,
   Video,
   Radio,
   MessageCircle,
@@ -33,7 +30,6 @@ import {
 export function MobileNav() {
   const [open, setOpen] = useState(false);
   const { user, signOut } = useAuth();
-  const { isAdmin } = useAdmin();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -129,39 +125,6 @@ export function MobileNav() {
               </Link>
             );
           })}
-
-          {/* Admin Panel — only rendered for confirmed admin users */}
-          {isAdmin && (
-            <>
-              <div className="mx-4 my-2 h-px bg-gradient-to-r from-transparent via-border/60 to-transparent" />
-              <Link
-                to="/admin"
-                onClick={() => setOpen(false)}
-                className={`group relative flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 font-rajdhani font-medium
-                  ${location.pathname.startsWith("/admin")
-                    ? "bg-[hsl(var(--neon-purple)/0.1)] border border-[hsl(var(--neon-purple)/0.2)]"
-                    : "hover:bg-muted/40 border border-transparent"
-                  }`}
-              >
-                {location.pathname.startsWith("/admin") && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full bg-gradient-to-b from-[hsl(var(--neon-purple))] to-[hsl(var(--neon-pink))]" />
-                )}
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-all ${
-                  location.pathname.startsWith("/admin") ? "bg-[hsl(var(--neon-purple)/0.1)]" : "bg-muted/30 group-hover:bg-muted/50"
-                }`}>
-                  <Shield className={`w-[18px] h-[18px] transition-colors ${
-                    location.pathname.startsWith("/admin") ? "text-[hsl(var(--neon-purple))]" : "text-muted-foreground group-hover:text-foreground"
-                  }`} />
-                </div>
-                <span className={`flex-1 text-sm tracking-wide ${
-                  location.pathname.startsWith("/admin") ? "text-foreground font-semibold" : "text-muted-foreground group-hover:text-foreground"
-                }`}>
-                  Admin Panel
-                </span>
-                <Sparkles className="w-3.5 h-3.5 text-[hsl(var(--neon-purple)/0.6)]" />
-              </Link>
-            </>
-          )}
         </nav>
 
         {/* Sign Out */}

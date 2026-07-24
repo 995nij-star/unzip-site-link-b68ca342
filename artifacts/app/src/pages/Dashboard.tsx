@@ -1,7 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useWallet } from "@/hooks/useWallet";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useAdmin } from "@/hooks/useAdmin";
 import { useGlobalCredentials } from "@/hooks/useGlobalCredentials";
 import { useNavigate, Link } from "react-router-dom";
 import { CyberButton } from "@/components/ui/cyber-button";
@@ -20,7 +19,6 @@ import {
   Zap,
   Target,
   Crown,
-  Shield,
   Search,
   Key,
   Copy,
@@ -105,7 +103,6 @@ AnimatedStatCard.displayName = "AnimatedStatCard";
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const { balance } = useWallet();
-  const { isAdmin } = useAdmin();
   const { credentials: globalCreds } = useGlobalCredentials();
   const { profile } = useProfile();
   const { data: appVersion } = useAppVersion();
@@ -241,17 +238,6 @@ export default function Dashboard() {
               <PushNotificationToggle />
               <NotificationDropdown />
               <ProfileDropdown />
-              {isAdmin && (
-                <CyberButton
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => navigate("/admin")}
-                  className="border-[hsl(var(--neon-purple)/0.4)] hover:border-[hsl(var(--neon-purple)/0.7)] transition-colors"
-                >
-                  <Shield className="w-4 h-4 text-[hsl(var(--neon-purple))]" />
-                  <span className="hidden sm:inline">{isAdmin ? "Admin" : "Mod"}</span>
-                </CyberButton>
-              )}
               <CyberButton
                 variant="ghost"
                 size="icon"

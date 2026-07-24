@@ -1,26 +1,23 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Plus, Send, Wallet as WalletIcon, Command, X, Shield } from "lucide-react";
+import { Plus, Send, Wallet as WalletIcon, Command, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAdmin } from "@/hooks/useAdmin";
+
+type Action =
+  | { label: string; icon: React.ComponentType<{ className?: string }>; path: string; onClick?: never }
+  | { label: string; icon: React.ComponentType<{ className?: string }>; onClick: () => void; path?: never };
 
 /**
  * Floating quick-action dial. Pure presentational — routes users to
- * existing wallet/transfer flows. Hidden on auth & admin routes to
+ * existing wallet/transfer flows. Hidden on auth routes to
  * avoid cluttering those surfaces.
- *
- * Admin Panel button is only shown when useAdmin().isAdmin is true,
- * which requires either the super-admin email or a DB role grant.
  */
 export function FloatingActions() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const { isAdmin } = useAdmin();
 
   const hidden =
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/clone/admin") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/auth") ||
@@ -30,10 +27,7 @@ export function FloatingActions() {
 
   if (hidden) return null;
 
-  const actions = [
-    ...(isAdmin
-      ? [{ label: "Admin Panel", icon: Shield, path: "/admin", highlight: true }]
-      : []),
+  const actions: Action[] = [
     { label: "Send Money", icon: Send, path: "/wallet/send" },
     { label: "Add Money", icon: Plus, path: "/wallet/add" },
     { label: "Wallet", icon: WalletIcon, path: "/wallet" },
@@ -65,30 +59,16 @@ export function FloatingActions() {
             aria-label={a.label}
             onClick={() => {
               setOpen(false);
-              if ("onClick" in a && a.onClick) a.onClick();
-              else if ("path" in a && a.path) navigate(a.path);
+              if (a.onClick) a.onClick();
+              else if (a.path) navigate(a.path);
             }}
-            className={cn(
-              "group flex items-center gap-3 pl-4 pr-3 py-2 rounded-full glass-luxury-strong hover:border-primary/40 transition-all hover:-translate-y-0.5",
-              "highlight" in a && a.highlight && "border border-[hsl(var(--neon-purple)/0.4)] hover:border-[hsl(var(--neon-purple)/0.7)]",
-            )}
+            className="group flex items-center gap-3 pl-4 pr-3 py-2 rounded-full glass-luxury-strong hover:border-primary/40 transition-all hover:-translate-y-0.5"
           >
-            <span className={cn(
-              "text-xs font-medium text-foreground/90 whitespace-nowrap",
-              "highlight" in a && a.highlight && "text-[hsl(var(--neon-purple))]",
-            )}>
+            <span className="text-xs font-medium text-foreground/90 whitespace-nowrap">
               {a.label}
             </span>
-            <span className={cn(
-              "w-9 h-9 rounded-full flex items-center justify-center shadow-lg",
-              "highlight" in a && a.highlight
-                ? "bg-[hsl(var(--neon-purple)/0.15)] border border-[hsl(var(--neon-purple)/0.4)] shadow-[hsl(var(--neon-purple)/0.3)]"
-                : "gradient-flow text-white shadow-primary/30",
-            )}>
-              <a.icon className={cn(
-                "w-4 h-4",
-                "highlight" in a && a.highlight && "text-[hsl(var(--neon-purple))]",
-              )} />
+            <span className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg gradient-flow text-white shadow-primary/30">
+              <a.icon className="w-4 h-4" />
             </span>
           </button>
         ))}

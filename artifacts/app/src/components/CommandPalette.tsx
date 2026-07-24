@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAdmin } from "@/hooks/useAdmin";
 import {
   CommandDialog,
   CommandEmpty,
@@ -18,7 +17,6 @@ import {
   Video,
   Users,
   Bell,
-  Settings,
   ShieldCheck,
   LifeBuoy,
   Search as SearchIcon,
@@ -29,7 +27,7 @@ type Cmd = {
   label: string;
   path: string;
   icon: React.ComponentType<{ className?: string }>;
-  group: "Navigate" | "Money" | "Admin" | "Account";
+  group: "Navigate" | "Money" | "Account";
   keywords?: string;
 };
 
@@ -51,22 +49,14 @@ const COMMANDS: Cmd[] = [
   { label: "Sessions", path: "/sessions", icon: ShieldCheck, group: "Account" },
   { label: "KYC Verification", path: "/kyc", icon: ShieldCheck, group: "Account" },
 
-  { label: "Admin Dashboard", path: "/admin", icon: LayoutDashboard, group: "Admin" },
-  { label: "Admin Users", path: "/admin/users", icon: Users, group: "Admin" },
-  { label: "Admin Money Transfers", path: "/admin/money-transfers", icon: Send, group: "Admin" },
-  { label: "Admin Settings", path: "/admin/settings", icon: Settings, group: "Admin" },
 ];
 
 /**
  * Global command palette (⌘K / Ctrl+K).
- * Admin commands are only shown to confirmed admin users (useAdmin hook).
- * Navigating to an admin URL as a non-admin will still be blocked by
- * AdminProtectedRoute — this is a defense-in-depth UI measure.
  */
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { isAdmin } = useAdmin();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -79,11 +69,7 @@ export function CommandPalette() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  const groups = (
-    isAdmin
-      ? ["Navigate", "Money", "Account", "Admin"]
-      : ["Navigate", "Money", "Account"]
-  ) as ("Navigate" | "Money" | "Account" | "Admin")[];
+  const groups: ("Navigate" | "Money" | "Account")[] = ["Navigate", "Money", "Account"];
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>

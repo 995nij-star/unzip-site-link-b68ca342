@@ -1,6 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { Wrench, Clock } from "lucide-react";
 
 interface MaintenanceConfig {
@@ -8,13 +7,10 @@ interface MaintenanceConfig {
   title: string;
   message: string;
   estimated_end: string;
-  allow_admins: boolean;
 }
 
 export function MaintenanceGuard({ children }: { children: ReactNode }) {
-  const { user } = useAuth();
   const [config, setConfig] = useState<MaintenanceConfig | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
@@ -29,21 +25,15 @@ export function MaintenanceGuard({ children }: { children: ReactNode }) {
       const cfg = (data as any)?.value as MaintenanceConfig | null;
       setConfig(cfg?.enabled ? cfg : null);
 
-      // Check if current user is admin
-      if (user && cfg?.enabled && cfg?.allow_admins) {
-        const { data: isAdminResult } = await (supabase as any).rpc("is_admin", { _user_id: user.id });
-        setIsAdmin(!!isAdminResult);
-      }
-
       setChecked(true);
     };
     check();
-  }, [user]);
+  }, []);
 
   if (!checked) return null;
 
-  // Show maintenance page if enabled and user is not an allowed admin
-  if (config?.enabled && !(config.allow_admins && isAdmin)) {
+  // Show maintenance page if enabled
+  if (config?.enabled) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-6">
         <div className="text-center max-w-md space-y-6">
