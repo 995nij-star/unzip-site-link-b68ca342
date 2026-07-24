@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { isAdminEmail } from "@/lib/adminAccess";
 import { Loader2, CheckCircle, XCircle, Gamepad2 } from "lucide-react";
 import { CyberButton } from "@/components/ui/cyber-button";
 
@@ -66,9 +67,8 @@ export default function AuthCallback() {
             if (v && v.startsWith("/") && !v.startsWith("//")) nextPath = v;
             sessionStorage.removeItem("post-login-next");
           } catch {}
-          const isOwner = data.session.user.email?.toLowerCase() === "okbin8511@gmail.com";
           setTimeout(() => {
-            navigate(nextPath ?? (isOwner ? "/admin" : "/dashboard"));
+            navigate(nextPath ?? (isAdminEmail(data.session.user.email) ? "/admin" : "/dashboard"));
           }, 1500);
         } else {
           // No session yet - might still be processing
@@ -90,9 +90,8 @@ export default function AuthCallback() {
               if (v && v.startsWith("/") && !v.startsWith("//")) nextPath = v;
               sessionStorage.removeItem("post-login-next");
             } catch {}
-            const isOwner = retryData.session.user.email?.toLowerCase() === "okbin8511@gmail.com";
             setTimeout(() => {
-              navigate(nextPath ?? (isOwner ? "/admin" : "/dashboard"));
+              navigate(nextPath ?? (isAdminEmail(retryData.session.user.email) ? "/admin" : "/dashboard"));
             }, 1500);
           } else {
             setStatus("success");

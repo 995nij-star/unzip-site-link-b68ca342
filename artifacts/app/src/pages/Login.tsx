@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { isAdminEmail } from "@/lib/adminAccess";
 import {
   Mail,
   Lock,
@@ -118,7 +119,8 @@ export default function Login() {
 
     toast({ title: "Welcome back!", description: "Login successful" });
     try { sessionStorage.removeItem("post-login-next"); } catch {}
-    navigate(nextPath ?? "/admin");
+    // Redirect: admin email → /admin, everyone else → /dashboard
+    navigate(nextPath ?? (isAdminEmail(email) ? "/admin" : "/dashboard"));
     setIsLoading(false);
     setLoadingStage("");
   };
@@ -158,7 +160,8 @@ export default function Login() {
         return;
       }
       toast({ title: "Welcome back!", description: "Login successful" });
-      navigate("/");
+      // Redirect: admin email → /admin, everyone else → /dashboard
+      navigate(isAdminEmail(email) ? "/admin" : "/dashboard");
     } catch (err: any) {
       toast({ title: "Error", description: err.message || "Something went wrong", variant: "destructive" });
     }
