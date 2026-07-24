@@ -21,7 +21,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const uidSchema = z.string()
   .trim()
-  .regex(/^\d{10}$/, { message: "UID must be exactly 10 digits" });
+  .regex(/^\d{8}$/, { message: "UID must be exactly 8 digits" });
 
 interface SearchResult {
   user_id: string;
@@ -146,7 +146,7 @@ export default function Search() {
             Find Player
           </h1>
           <p className="text-muted-foreground font-rajdhani">
-            Search for players using their 10-digit UID
+            Search for players using their 8-digit UID
           </p>
         </div>
 
@@ -156,20 +156,20 @@ export default function Search() {
             <div className="flex-1">
               <CyberInput
                 type="text"
-                placeholder="Enter 10-digit UID"
+                placeholder="Enter 8-digit UID"
                 value={searchQuery}
                 onChange={(e) => {
                   // Only allow digits
-                  const value = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  const value = e.target.value.replace(/\D/g, "").slice(0, 8);
                   setSearchQuery(value);
                 }}
                 icon={<User className="w-5 h-5" />}
-                maxLength={10}
+                maxLength={8}
               />
             </div>
             <CyberButton
               type="submit"
-              disabled={isSearching || searchQuery.length !== 10}
+              disabled={isSearching || searchQuery.length !== 8}
             >
               {isSearching ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -180,7 +180,7 @@ export default function Search() {
             </CyberButton>
           </div>
           <p className="text-xs text-muted-foreground mt-2 text-center font-rajdhani">
-            {searchQuery.length}/10 digits
+            {searchQuery.length}/8 digits
           </p>
         </form>
 
